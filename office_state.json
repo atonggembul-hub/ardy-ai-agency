@@ -1,6 +1,6 @@
 {
-  "mode": "work",
-  "updated_at": "2026-11-24T01:45:19+07:00",
+  "mode": "coffee",
+  "updated_at": "2026-11-24T01:59:22+07:00",
   "approval_needed": false,
   "approval_message": "Paket konten 20261123 (@RaymondChins 58s 9:16 + 3 caption + Drive link) siap! Menunggu ACC Bos Ardy.",
   "agents": {
@@ -15,9 +15,9 @@
       "task": "Standby riset konten berikutnya"
     },
     "jubaidah": {
-      "status": "Selesai Analisa",
-      "room": "workspace",
-      "task": "4 video di 00_raw_assets sudah dipelajari; siap edit sesuai arahan Bos Ardy"
+      "status": "Ngopi Latte",
+      "room": "coffee",
+      "task": "Standby jika ada revisi video"
     },
     "bodat": {
       "status": "Santai Bistro",
