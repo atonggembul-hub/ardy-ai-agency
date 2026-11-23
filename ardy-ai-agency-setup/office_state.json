@@ -1,0 +1,28 @@
+{
+  "mode": "work",
+  "updated_at": "2026-11-23T22:23:11+07:00",
+  "approval_needed": false,
+  "approval_message": "Kantor AI Agent 3D Ardy HQ aktif dan siap menerima perintah produksi konten harian.",
+  "agents": {
+    "ardy": {
+      "status": "Mengawasi",
+      "room": "boss",
+      "task": "Kantor AI Agent HQ aktif & terhubung ke GitHub Cloud"
+    },
+    "sentod": {
+      "status": "Siap Riset",
+      "room": "workspace",
+      "task": "Menunggu perintah niche / jadwal harian untuk riset tren"
+    },
+    "jubaidah": {
+      "status": "Siap Edit 9:16",
+      "room": "workspace",
+      "task": "FFmpeg & ffprobe siap mengolah video vertikal 1080x1920"
+    },
+    "bodat": {
+      "status": "Siap Caption",
+      "room": "workspace",
+      "task": "Siap menyusun 3 variasi caption & bundel paket tayang"
+    }
+  }
+}

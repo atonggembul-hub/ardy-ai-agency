@@ -1,0 +1,2151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kantor AI Agent 3D — Ardy HQ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at 50% 35%, #f8fafc 0%, #e7eef5 58%, #d7e3ee 100%);
+            user-select: none;
+        }
+        .font-display {
+            font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+        }
+        #canvas-container {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            cursor: grab;
+        }
+        #canvas-container:active {
+            cursor: grabbing;
+        }
+        .light-glass {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.10), 0 1px 3px rgba(15, 23, 42, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.85);
+        }
+        .pixel-canvas {
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+        @keyframes pulseTeal {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.55); }
+            50% { box-shadow: 0 0 0 6px rgba(20, 184, 166, 0); }
+        }
+        .pulse-teal {
+            animation: pulseTeal 1.8s infinite;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body>
+    <!-- Container Canvas 3D -->
+    <div id="canvas-container"></div>
+
+    <!-- HUD Kiri Atas: Identitas Kantor & Panduan Kontrol -->
+    <div class="fixed top-3 left-3 sm:top-4 sm:left-4 z-20 pointer-events-none flex flex-col gap-2 max-w-[260px] sm:max-w-xs">
+        <div class="light-glass rounded-2xl px-3.5 py-2.5 pointer-events-auto">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-display font-bold text-base shadow-sm shrink-0">
+                    A3D
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                        <h1 class="font-display font-bold text-sm sm:text-base text-slate-900 truncate">Ardy AI Agency HQ</h1>
+                        <span id="current-mode-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 shrink-0">Kerja</span>
+                    </div>
+                    <p class="text-[10px] sm:text-[11px] text-slate-500 truncate">Kantor 360° • Drag putar • Scroll zoom • Klik agen</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HUD Kanan Atas: Kontrol Mode, Daftar Agen & Live Cloud Sync -->
+    <div class="fixed top-3 right-3 sm:top-4 sm:right-4 z-20 pointer-events-auto w-[235px] sm:w-[270px]">
+        <div class="light-glass rounded-2xl p-3">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Operasional Tim</span>
+                <button id="btn-toggle-panel" onclick="toggleRightPanel()" class="text-[11px] font-semibold text-teal-700 hover:text-teal-900 bg-teal-50 px-2 py-0.5 rounded-lg border border-teal-100">
+                    Tutup
+                </button>
+            </div>
+
+            <div id="right-panel-body">
+                <!-- Tombol Mode Global -->
+                <div class="grid grid-cols-3 gap-1.5 mb-3">
+                    <button id="btn-mode-work" onclick="setOfficeMode('work')" class="mode-btn bg-teal-600 text-white shadow-sm text-[11px] font-semibold py-1.5 rounded-xl transition">
+                        💼 Kerja
+                    </button>
+                    <button id="btn-mode-meeting" onclick="setOfficeMode('meeting')" class="mode-btn bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200/70 text-[11px] font-semibold py-1.5 rounded-xl transition">
+                        📊 Meeting
+                    </button>
+                    <button id="btn-mode-coffee" onclick="setOfficeMode('coffee')" class="mode-btn bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200/70 text-[11px] font-semibold py-1.5 rounded-xl transition">
+                        ☕ Ngopi
+                    </button>
+                </div>
+
+                <!-- Daftar 4 Karakter -->
+                <div class="space-y-1 text-xs">
+                    <div onclick="focusAgent('ardy')" class="agent-row flex items-center justify-between p-1.5 rounded-xl hover:bg-teal-50/80 cursor-pointer transition border border-transparent hover:border-teal-200">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <canvas id="avatar-ardy" width="32" height="32" class="w-8 h-8 rounded-lg bg-amber-100 border border-slate-300 pixel-canvas shrink-0"></canvas>
+                            <div class="min-w-0">
+                                <div class="font-bold text-slate-800 leading-tight truncate">Bos Ardy</div>
+                                <div class="text-[10px] text-slate-500 truncate">Pengawas & CEO</div>
+                            </div>
+                        </div>
+                        <span id="status-ardy" class="text-[10px] px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-800 font-semibold shrink-0 ml-1">Mengawasi</span>
+                    </div>
+
+                    <div onclick="focusAgent('sentod')" class="agent-row flex items-center justify-between p-1.5 rounded-xl hover:bg-teal-50/80 cursor-pointer transition border border-transparent hover:border-teal-200">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <canvas id="avatar-sentod" width="32" height="32" class="w-8 h-8 rounded-lg bg-cyan-100 border border-slate-300 pixel-canvas shrink-0"></canvas>
+                            <div class="min-w-0">
+                                <div class="font-bold text-slate-800 leading-tight truncate">Sentod</div>
+                                <div class="text-[10px] text-slate-500 truncate">Analis Konten</div>
+                            </div>
+                        </div>
+                        <span id="status-sentod" class="text-[10px] px-1.5 py-0.5 rounded-md bg-cyan-100 text-cyan-800 font-semibold shrink-0 ml-1">Riset Tren</span>
+                    </div>
+
+                    <div onclick="focusAgent('jubaidah')" class="agent-row flex items-center justify-between p-1.5 rounded-xl hover:bg-teal-50/80 cursor-pointer transition border border-transparent hover:border-teal-200">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <canvas id="avatar-jubaidah" width="32" height="32" class="w-8 h-8 rounded-lg bg-rose-100 border border-slate-300 pixel-canvas shrink-0"></canvas>
+                            <div class="min-w-0">
+                                <div class="font-bold text-slate-800 leading-tight truncate">Jubaidah</div>
+                                <div class="text-[10px] text-slate-500 truncate">Editing Video</div>
+                            </div>
+                        </div>
+                        <span id="status-jubaidah" class="text-[10px] px-1.5 py-0.5 rounded-md bg-rose-100 text-rose-800 font-semibold shrink-0 ml-1">Edit 4K</span>
+                    </div>
+
+                    <div onclick="focusAgent('bodat')" class="agent-row flex items-center justify-between p-1.5 rounded-xl hover:bg-teal-50/80 cursor-pointer transition border border-transparent hover:border-teal-200">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <canvas id="avatar-bodat" width="32" height="32" class="w-8 h-8 rounded-lg bg-emerald-100 border border-slate-300 pixel-canvas shrink-0"></canvas>
+                            <div class="min-w-0">
+                                <div class="font-bold text-slate-800 leading-tight truncate">Bodat</div>
+                                <div class="text-[10px] text-slate-500 truncate">Uploader & Caption</div>
+                            </div>
+                        </div>
+                        <span id="status-bodat" class="text-[10px] px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-semibold shrink-0 ml-1">Tulis Caption</span>
+                    </div>
+                </div>
+
+                <!-- Panel Ringkas Antigravity Cloud Sync (office_state.json) -->
+                <div class="mt-3 pt-2.5 border-t border-slate-200/80">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                            <span id="cloud-dot" class="w-2 h-2 rounded-full bg-slate-400"></span>
+                            Antigravity Cloud
+                        </span>
+                        <span id="cloud-status-text" class="text-[10px] font-semibold text-slate-500">Manual</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1.5">
+                        <button onclick="openCloudSyncModal()" class="bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-semibold py-1.5 px-2 rounded-xl transition flex items-center justify-center gap-1 shadow-sm">
+                            <span>☁️</span>
+                            <span>Sync JSON</span>
+                        </button>
+                        <button id="btn-sim-pipeline" onclick="togglePipelineSimulation()" class="bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-[11px] font-semibold py-1.5 px-2 rounded-xl transition flex items-center justify-center gap-1">
+                            <span>▶️</span>
+                            <span>Simulasi</span>
+                        </button>
+                    </div>
+                    <p id="cloud-last-sync" class="text-[10px] text-slate-400 mt-1.5 truncate">Belum terhubung ke URL cloud</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kartu Detail Inspeksi Karakter (Muncul saat karakter diklik) -->
+    <div id="character-inspect-card" class="hidden fixed bottom-20 left-3 sm:left-4 z-20 max-w-xs pointer-events-auto">
+        <div class="light-glass rounded-2xl p-3.5 border-l-4 border-teal-500">
+            <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-2.5">
+                    <canvas id="inspect-avatar" width="32" height="32" class="w-11 h-11 rounded-xl bg-slate-100 border border-slate-300 pixel-canvas shrink-0"></canvas>
+                    <div>
+                        <h3 id="inspect-name" class="font-display font-bold text-sm text-slate-900">Bos Ardy</h3>
+                        <p id="inspect-role" class="text-[11px] font-semibold text-teal-700">Pengawas & CEO</p>
+                    </div>
+                </div>
+                <button onclick="closeInspectCard()" class="text-slate-400 hover:text-slate-700 text-sm px-1.5 py-0.5 rounded-lg">✕</button>
+            </div>
+            <p id="inspect-desc" class="text-[11px] text-slate-600 mt-2 leading-relaxed"></p>
+            <div id="inspect-live-task" class="hidden mt-2 pt-2 border-t border-slate-200/80 text-[11px] text-teal-800 font-semibold"></div>
+        </div>
+    </div>
+
+    <!-- Navigasi Cepat Ruangan (Bawah Tengah) -->
+    <div class="fixed bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 max-w-[95vw] pointer-events-auto">
+        <div class="light-glass rounded-2xl p-1.5 flex items-center gap-1 overflow-x-auto no-scrollbar">
+            <button id="cam-iso" onclick="moveCameraTo('iso')" class="cam-btn bg-slate-900 text-white text-xs font-semibold px-3 py-2 rounded-xl transition whitespace-nowrap">
+                🌐 Isometrik 360°
+            </button>
+            <button id="cam-boss" onclick="moveCameraTo('boss')" class="cam-btn text-slate-700 hover:bg-slate-100 text-xs font-semibold px-3 py-2 rounded-xl transition whitespace-nowrap">
+                👑 Ruang Bos Ardy
+            </button>
+            <button id="cam-workspace" onclick="moveCameraTo('workspace')" class="cam-btn text-slate-700 hover:bg-slate-100 text-xs font-semibold px-3 py-2 rounded-xl transition whitespace-nowrap">
+                💻 Ruang Kerja AI
+            </button>
+            <button id="cam-meeting" onclick="moveCameraTo('meeting')" class="cam-btn text-slate-700 hover:bg-slate-100 text-xs font-semibold px-3 py-2 rounded-xl transition whitespace-nowrap">
+                📊 Ruang Meeting
+            </button>
+            <button id="cam-coffee" onclick="moveCameraTo('coffee')" class="cam-btn text-slate-700 hover:bg-slate-100 text-xs font-semibold px-3 py-2 rounded-xl transition whitespace-nowrap">
+                ☕ Area Ngopi
+            </button>
+            <button id="btn-autorotate" onclick="toggleAutoRotate()" class="text-slate-600 hover:bg-slate-100 text-xs font-semibold px-2.5 py-2 rounded-xl transition whitespace-nowrap border-l border-slate-200 ml-0.5" title="Putar kamera 360° otomatis">
+                🔄 Auto
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notifikasi -->
+    <div id="toast-box" class="fixed top-20 left-1/2 -translate-x-1/2 z-30 pointer-events-none opacity-0 transition-opacity duration-300">
+        <div id="toast-text" class="bg-slate-900/90 text-white px-4 py-2 rounded-full text-xs font-medium shadow-lg backdrop-blur">
+            Memindahkan kamera...
+        </div>
+    </div>
+
+    <!-- Banner Notifikasi ACC Bos Ardy -->
+    <div id="approval-banner" class="hidden fixed top-16 sm:top-4 left-1/2 -translate-x-1/2 z-30 w-[92%] max-w-md pointer-events-auto">
+        <div class="bg-amber-50/95 backdrop-blur-md border-2 border-amber-400 rounded-2xl p-3 shadow-xl flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl bg-amber-400 text-slate-900 flex items-center justify-center text-lg shrink-0 font-bold">
+                🔔
+            </div>
+            <div class="min-w-0 flex-1">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-xs font-bold text-amber-900">Menunggu ACC Bos Ardy</span>
+                    <button onclick="dismissApprovalBanner()" class="text-amber-700 hover:text-amber-950 text-xs font-bold px-1">✕</button>
+                </div>
+                <p id="approval-message" class="text-[11px] text-amber-900/90 mt-0.5 leading-snug">
+                    Paket konten hari ini selesai dibuat oleh Sentod, Jubaidah & Bodat.
+                </p>
+                <div class="mt-2 flex flex-wrap gap-1.5">
+                    <button onclick="copyAccCommand()" class="bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg transition shadow-sm">
+                        📋 Salin Perintah ACC
+                    </button>
+                    <button onclick="moveCameraTo('boss')" class="bg-white hover:bg-amber-100 text-amber-900 border border-amber-300 text-[11px] font-semibold px-2.5 py-1 rounded-lg transition">
+                        👑 Ke Ruang Bos
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pengaturan Google Antigravity Live Sync (office_state.json) -->
+    <div id="cloud-sync-modal" class="hidden fixed inset-0 z-40 bg-slate-900/45 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 pointer-events-auto">
+        <div class="bg-white rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 p-4 sm:p-5">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center text-base shadow-sm">☁️</div>
+                    <div>
+                        <h2 class="font-display font-bold text-sm sm:text-base text-slate-900">Live Sync Google Antigravity</h2>
+                        <p class="text-[11px] text-slate-500">Hubungkan <code class="bg-slate-100 px-1 rounded text-teal-700">office_state.json</code> ke Kantor 3D</p>
+                    </div>
+                </div>
+                <button onclick="closeCloudSyncModal()" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm transition">✕</button>
+            </div>
+
+            <!-- Bagian 1: Live URL Polling -->
+            <div class="mt-4 space-y-3">
+                <div>
+                    <label for="cloud-url-input" class="block text-xs font-semibold text-slate-700 mb-1">
+                        URL Endpoint <code class="text-teal-700">office_state.json</code> (GitHub Raw / Firebase / API)
+                    </label>
+                    <input id="cloud-url-input" type="url" placeholder="https://atonggembul-hub.github.io/ardy-ai-agency/office_state.json"
+                        class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-slate-50 text-slate-800">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 items-end">
+                    <div>
+                        <label for="cloud-interval-select" class="block text-xs font-semibold text-slate-700 mb-1">Interval Polling Otomatis</label>
+                        <select id="cloud-interval-select" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                            <option value="3000">Setiap 3 detik (Real-time)</option>
+                            <option value="5000" selected>Setiap 5 detik (Direkomendasikan)</option>
+                            <option value="10000">Setiap 10 detik</option>
+                            <option value="30000">Setiap 30 detik (Hemat data)</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-1.5">
+                        <button id="btn-toggle-polling" onclick="toggleCloudPolling()" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold py-2 px-3 rounded-xl transition shadow-sm">
+                            Aktifkan Live Sync
+                        </button>
+                        <button onclick="manualFetchCloudState()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-semibold py-2 px-2.5 rounded-xl transition" title="Ambil data sekarang">
+                            🔄
+                        </button>
+                    </div>
+                </div>
+
+                <div id="cloud-feedback-box" class="hidden text-[11px] px-3 py-2 rounded-xl border"></div>
+            </div>
+
+            <!-- Bagian 2: Uji JSON Manual -->
+            <div class="mt-4 pt-4 border-t border-slate-100">
+                <div class="flex items-center justify-between mb-1.5">
+                    <span class="text-xs font-semibold text-slate-700">Uji Payload JSON Langsung (Tanpa Server)</span>
+                    <button onclick="copySampleJson()" class="text-[11px] font-semibold text-teal-700 hover:text-teal-900 bg-teal-50 px-2 py-0.5 rounded-lg border border-teal-200">
+                        📋 Salin Format JSON
+                    </button>
+                </div>
+                <textarea id="manual-json-input" rows="7" class="w-full p-2.5 font-mono text-[11px] rounded-xl border border-slate-300 bg-slate-900 text-emerald-300 focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+                <div class="mt-2 flex flex-wrap items-center justify-between gap-2">
+                    <button onclick="applyManualJson()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold py-2 px-3.5 rounded-xl transition">
+                        ⚡ Terapkan JSON ke Kantor 3D
+                    </button>
+                    <button onclick="closeCloudSyncModal(); togglePipelineSimulation();" class="bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-xs font-semibold py-2 px-3 rounded-xl transition">
+                        ▶️ Jalankan Simulasi Estafet AI
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // 1. KONFIGURASI GLOBAL & DATA KARAKTER (SESUAI 4 REFERENSI GAMBAR)
+        // =========================================================================
+        let scene, camera, renderer, controls, clock;
+        let raycaster, mouse;
+        let currentMode = 'work';
+        let autoRotateEnabled = false;
+        let cameraAnim = null;
+        let toastTimeout = null;
+        let steamParticles = [];
+        const agents = {};
+        const clickableAgentMeshes = [];
+
+        // Palet warna sesuai gambar referensi kantor kartun isometrik
+        const PALETTE = {
+            floorTop: 0x615957,
+            floorSlab: 0x47403e,
+            wallCream: 0xebe0d6,
+            wallSide: 0xdccfc4,
+            wallTrim: 0xf7f2ed,
+            windowFrame: 0xf8fafc,
+            windowGlass: 0xb4dcf8,
+            deskWhite: 0xf8fafc,
+            tealMain: 0x16a39a,
+            tealDark: 0x0f766e,
+            tealArt: 0x149e96,
+            chairYellow: 0xf3e588,
+            chairMetal: 0xcbd5e1,
+            monitorDark: 0x2d333b,
+            screenGlow: 0x1e293b,
+            plantGreen: 0x5cb85c,
+            plantPot: 0xe2e8f0,
+            woodWarm: 0xc79c73,
+            coffeeRug: 0x7c6f68
+        };
+
+        const AGENT_INFO = {
+            ardy: {
+                name: 'Bos Ardy',
+                role: 'Pengawas & CEO (Human-in-the-Loop)',
+                desc: 'Referensi Char No. 1: Kepala botak atas dengan rambut samping & kumis tebal, kaos kuning-hijau, apron gelap bertali silang X di punggung. Mengawasi kinerja agen dari Ruang Bos & memberi ACC.'
+            },
+            sentod: {
+                name: 'Sentod',
+                role: 'AI Agent — Analis Konten & Riset Tren',
+                desc: 'Referensi Char No. 7: Topi hitam bertuliskan "ERF", rambut cokelat panjang, seragam taktis biru-teal berlengan panjang dengan patch kuning & sabuk pouch. Meriset tren dan menyusun brief konten.'
+            },
+            jubaidah: {
+                name: 'Jubaidah',
+                role: 'AI Agent — Editing Video & Render',
+                desc: 'Referensi Char No. 6: Rambut cokelat dikuncir ponytail, headset bermikrofon, rompi maroon dengan ID badge, kemeja putih, dasi kuning, rok biru tua, membawa clipboard. Mengedit & merender video 9:16.'
+            },
+            bodat: {
+                name: 'Bodat',
+                role: 'AI Agent — Uploader & Penulis Caption',
+                desc: 'Referensi Char No. 4: Rambut pendek perak-mint menutupi sebelah mata, sweater rajut cokelat-khaki longgar, legging gelap, dan sepatu boots krem. Menulis caption SEO & menjadwalkan unggahan.'
+            }
+        };
+
+        // Preset kamera 360° untuk setiap ruangan
+        const CAMERA_PRESETS = {
+            iso:       { pos: new THREE.Vector3(24, 21, 24),   target: new THREE.Vector3(0, 1.2, 0),     label: 'Tampilan Isometrik 360°' },
+            boss:      { pos: new THREE.Vector3(-1.5, 11, 2.5), target: new THREE.Vector3(-8.2, 1.4, -7.2), label: 'Ruang Bos Ardy' },
+            workspace: { pos: new THREE.Vector3(16.5, 12, 8.5), target: new THREE.Vector3(6.8, 1.4, -5.2),  label: 'Ruang Kerja AI (Sentod, Jubaidah, Bodat)' },
+            meeting:   { pos: new THREE.Vector3(-2.5, 11.5, 16.5), target: new THREE.Vector3(-8.4, 1.2, 6.8), label: 'Ruang Meeting Konten' },
+            coffee:    { pos: new THREE.Vector3(16.5, 10.5, 16.5), target: new THREE.Vector3(7.6, 1.2, 6.8),  label: 'Area Ngopi & Santai AI' }
+        };
+
+        // Hub koridor tengah agar karakter berjalan melewati pintu tanpa menembus tembok
+        const HUB = new THREE.Vector3(-0.2, 0, 2.0);
+
+        // =========================================================================
+        // 2. AVATAR PIXEL-ART 2D (UNTUK PANEL & KARTU INSPEKSI)
+        // =========================================================================
+        function drawPixelAvatar(canvasEl, key) {
+            if (!canvasEl) return;
+            const ctx = canvasEl.getContext('2d');
+            ctx.clearRect(0, 0, 32, 32);
+            const p = (x, y, w, h, c) => { ctx.fillStyle = c; ctx.fillRect(x, y, w, h); };
+
+            if (key === 'ardy') {
+                // Bos Ardy: Botak, rambut samping gelap, kumis tebal, kaos kuning-hijau, apron gelap
+                p(0, 0, 32, 32, '#fef3c7');
+                p(9, 4, 14, 12, '#d99e7c');   // kepala
+                p(8, 7, 2, 7, '#2c2524');     // rambut kiri
+                p(22, 7, 2, 7, '#2c2524');    // rambut kanan
+                p(12, 9, 2, 2, '#1f2937');    // mata kiri
+                p(18, 9, 2, 2, '#1f2937');    // mata kanan
+                p(9, 12, 14, 4, '#2c2524');   // kumis tebal
+                p(12, 15, 8, 2, '#c58765');   // dagu
+                p(5, 18, 22, 14, '#c7cf5f');  // kaos kuning-hijau
+                p(9, 18, 14, 14, '#3d4252');  // apron gelap
+                p(10, 17, 2, 5, '#2b2f3b');   // tali apron kiri
+                p(20, 17, 2, 5, '#2b2f3b');   // tali apron kanan
+            } else if (key === 'sentod') {
+                // Sentod: Topi hitam ERF, rambut cokelat panjang, seragam taktis biru-teal
+                p(0, 0, 32, 32, '#cffafe');
+                p(8, 3, 16, 6, '#2b2f36');    // topi
+                p(7, 8, 18, 2, '#1f2329');    // visor topi
+                p(11, 5, 10, 2, '#f8fafc');   // tulisan ERF
+                p(8, 10, 3, 12, '#694a38');   // rambut panjang kiri
+                p(21, 10, 3, 12, '#694a38');  // rambut panjang kanan
+                p(11, 10, 10, 9, '#f1c2a5');  // wajah
+                p(12, 13, 2, 2, '#166534');   // mata hijau kiri
+                p(18, 13, 2, 2, '#166534');   // mata hijau kanan
+                p(6, 20, 20, 12, '#2a6b7a');  // seragam taktis teal
+                p(7, 22, 3, 3, '#eab308');    // patch kuning
+                p(10, 27, 12, 3, '#27272a');  // sabuk
+                p(15, 27, 2, 3, '#e2e8f0');   // gesper
+            } else if (key === 'jubaidah') {
+                // Jubaidah: Ponytail cokelat, headset, rompi maroon, dasi kuning, ID badge
+                p(0, 0, 32, 32, '#ffe4e6');
+                p(20, 4, 6, 7, '#6b3e2e');    // ponytail
+                p(9, 4, 14, 7, '#6b3e2e');    // rambut atas
+                p(10, 9, 12, 9, '#f5c7ad');   // wajah
+                p(8, 9, 2, 6, '#6b3e2e');     // poni kiri
+                p(22, 9, 2, 5, '#6b3e2e');    // poni kanan
+                p(12, 12, 2, 2, '#0284c7');   // mata biru
+                p(18, 12, 2, 2, '#0284c7');
+                p(8, 4, 16, 2, '#64748b');    // bando headset
+                p(21, 11, 3, 4, '#94a3b8');   // earcup headset
+                p(17, 15, 5, 1, '#475569');   // mic
+                p(6, 19, 20, 13, '#ffffff');  // kemeja putih
+                p(9, 19, 14, 11, '#8c3542');  // rompi maroon
+                p(15, 19, 2, 6, '#eab308');   // dasi kuning
+                p(11, 23, 4, 3, '#e2e8f0');   // ID badge
+            } else if (key === 'bodat') {
+                // Bodat: Rambut pendek mint-perak menutupi sebelah mata, sweater rajut khaki
+                p(0, 0, 32, 32, '#d1fae5');
+                p(8, 4, 16, 9, '#8ea89c');    // rambut mint-perak
+                p(7, 9, 4, 6, '#7b968a');     // sisi kiri
+                p(21, 9, 4, 6, '#7b968a');    // sisi kanan
+                p(10, 10, 12, 9, '#f4d2c4');  // wajah
+                p(14, 9, 8, 5, '#8ea89c');    // poni menutup mata kanan
+                p(12, 13, 2, 2, '#475569');   // mata kiri terlihat
+                p(6, 19, 20, 13, '#9a8764');  // sweater khaki longgar
+                p(12, 19, 8, 3, '#f4d2c4');   // kerah lebar
+                p(6, 29, 20, 3, '#7e6d4e');   // hem rajut
+            }
+        }
+
+        function initAvatars() {
+            ['ardy', 'sentod', 'jubaidah', 'bodat'].forEach(k => {
+                drawPixelAvatar(document.getElementById(`avatar-${k}`), k);
+            });
+        }
+
+        // =========================================================================
+        // 3. HELPER TEKSTUR KANVAS (SIGNBOARD, LAYAR MONITOR, TOPI ERF, PAPAN TULIS)
+        // =========================================================================
+        function createTextTexture(text, bg, fg, width = 256, height = 64, fontSize = 26) {
+            const c = document.createElement('canvas');
+            c.width = width;
+            c.height = height;
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = bg;
+            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = fg;
+            ctx.font = `bold ${fontSize}px "Space Grotesk", sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, width / 2, height / 2 + 1);
+            const tex = new THREE.CanvasTexture(c);
+            tex.anisotropy = 4;
+            return tex;
+        }
+
+        function createDashboardTexture(title, accentHex) {
+            const c = document.createElement('canvas');
+            c.width = 256;
+            c.height = 144;
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, 256, 144);
+            ctx.fillStyle = accentHex;
+            ctx.fillRect(0, 0, 256, 22);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 12px sans-serif';
+            ctx.fillText(title, 10, 15);
+
+            // Grafik batang mini
+            const bars = [45, 72, 58, 92, 68, 105, 86];
+            bars.forEach((h, i) => {
+                ctx.fillStyle = i % 2 === 0 ? accentHex : '#38bdf8';
+                ctx.fillRect(16 + i * 22, 128 - h * 0.78, 14, h * 0.78);
+            });
+            // Panel kanan
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(178, 32, 66, 96);
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillRect(186, 44, 50, 7);
+            ctx.fillRect(186, 58, 40, 7);
+            ctx.fillStyle = '#22c55e';
+            ctx.fillRect(186, 76, 46, 14);
+            ctx.fillStyle = '#facc15';
+            ctx.fillRect(186, 98, 36, 14);
+
+            return new THREE.CanvasTexture(c);
+        }
+
+        function createWhiteboardTexture() {
+            const c = document.createElement('canvas');
+            c.width = 512;
+            c.height = 256;
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(0, 0, 512, 256);
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 6;
+            ctx.strokeRect(3, 3, 506, 250);
+
+            ctx.fillStyle = '#0f766e';
+            ctx.font = 'bold 22px sans-serif';
+            ctx.fillText('PIPELINE KONTEN — ARDY AI AGENCY', 24, 38);
+
+            // Kotak alur kerja
+            const steps = [
+                { label: '1. SENTOD', sub: 'Riset & Brief', color: '#0891b2', x: 24 },
+                { label: '2. JUBAIDAH', sub: 'Edit Video 9:16', color: '#be123c', x: 184 },
+                { label: '3. BODAT', sub: 'Caption & Upload', color: '#059669', x: 344 }
+            ];
+            steps.forEach(s => {
+                ctx.fillStyle = s.color;
+                ctx.fillRect(s.x, 66, 140, 62);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 16px sans-serif';
+                ctx.fillText(s.label, s.x + 12, 92);
+                ctx.font = '13px sans-serif';
+                ctx.fillText(s.sub, s.x + 12, 114);
+            });
+
+            // Panah
+            ctx.fillStyle = '#334155';
+            ctx.font = 'bold 22px sans-serif';
+            ctx.fillText('→', 165, 102);
+            ctx.fillText('→', 325, 102);
+
+            // Kotak ACC Bos Ardy
+            ctx.fillStyle = '#fef3c7';
+            ctx.fillRect(24, 152, 460, 72);
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(24, 152, 460, 72);
+            ctx.fillStyle = '#92400e';
+            ctx.font = 'bold 18px sans-serif';
+            ctx.fillText('CHECKPOINT BOS ARDY: REVIEW & ACC PUBLIKASI', 42, 185);
+            ctx.font = '14px sans-serif';
+            ctx.fillText('Status Cloud: Antigravity Remote Sandbox • Mode Otomatis', 42, 208);
+
+            return new THREE.CanvasTexture(c);
+        }
+
+        function createNameTagSprite(name, accentBg) {
+            const c = document.createElement('canvas');
+            c.width = 256;
+            c.height = 72;
+            const ctx = c.getContext('2d');
+            ctx.clearRect(0, 0, 256, 72);
+
+            // Pill rounded
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.84)';
+            ctx.beginPath();
+            ctx.roundRect(24, 14, 208, 44, 22);
+            ctx.fill();
+
+            ctx.fillStyle = accentBg;
+            ctx.beginPath();
+            ctx.arc(48, 36, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 22px "Plus Jakarta Sans", sans-serif';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(name, 66, 37);
+
+            const tex = new THREE.CanvasTexture(c);
+            const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+            const sprite = new THREE.Sprite(mat);
+            sprite.scale.set(2.3, 0.65, 1);
+            sprite.renderOrder = 10;
+            return sprite;
+        }
+
+        // =========================================================================
+        // 4. HELPER OBJEK 3D (FURNITUR KANTOR KARTUN ISOMETRIK)
+        // =========================================================================
+        function addBox(parent, w, h, d, color, x, y, z, opts = {}) {
+            const geo = new THREE.BoxGeometry(w, h, d);
+            const mat = new THREE.MeshStandardMaterial({
+                color,
+                roughness: opts.roughness !== undefined ? opts.roughness : 0.72,
+                metalness: opts.metalness !== undefined ? opts.metalness : 0.05,
+                transparent: !!opts.transparent,
+                opacity: opts.opacity !== undefined ? opts.opacity : 1.0,
+                map: opts.map || null
+            });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.set(x, y, z);
+            if (opts.ry) mesh.rotation.y = opts.ry;
+            if (opts.rx) mesh.rotation.x = opts.rx;
+            mesh.castShadow = opts.castShadow !== false;
+            mesh.receiveShadow = opts.receiveShadow !== false;
+            parent.add(mesh);
+            return mesh;
+        }
+
+        function createSwivelChair(x, z, rotY = 0, isBoss = false) {
+            const g = new THREE.Group();
+            g.position.set(x, 0, z);
+            g.rotation.y = rotY;
+
+            // Kaki 5-bintang metalik
+            const stem = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.06, 0.08, 0.42, 10),
+                new THREE.MeshStandardMaterial({ color: PALETTE.chairMetal, roughness: 0.4, metalness: 0.4 })
+            );
+            stem.position.y = 0.24;
+            stem.castShadow = true;
+            g.add(stem);
+
+            for (let i = 0; i < 5; i++) {
+                const a = (i / 5) * Math.PI * 2;
+                const leg = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.06, 0.05, 0.42),
+                    new THREE.MeshStandardMaterial({ color: PALETTE.chairMetal, roughness: 0.4 })
+                );
+                leg.position.set(Math.sin(a) * 0.2, 0.06, Math.cos(a) * 0.2);
+                leg.rotation.y = a;
+                g.add(leg);
+            }
+
+            // Dudukan & sandaran kuning pastel (sesuai referensi gambar kantor)
+            const seatW = isBoss ? 0.92 : 0.76;
+            const seatD = isBoss ? 0.84 : 0.72;
+            const backH = isBoss ? 0.98 : 0.74;
+            addBox(g, seatW, 0.14, seatD, PALETTE.chairYellow, 0, 0.50, 0, { roughness: 0.85 });
+            addBox(g, seatW, backH, 0.13, PALETTE.chairYellow, 0, 0.50 + backH / 2, -seatD / 2 + 0.06, { roughness: 0.85 });
+            // Sandaran tangan tipis
+            addBox(g, 0.07, 0.26, 0.48, 0xe2e8f0, -seatW / 2 - 0.02, 0.68, -0.05);
+            addBox(g, 0.07, 0.26, 0.48, 0xe2e8f0,  seatW / 2 + 0.02, 0.68, -0.05);
+
+            scene.add(g);
+            return g;
+        }
+
+        function createCartoonDesk(x, z, w, d, rotY = 0, withSideReturn = true) {
+            const g = new THREE.Group();
+            g.position.set(x, 0, z);
+            g.rotation.y = rotY;
+
+            // Meja putih bersih dengan panel aksen teal (ciri khas gambar referensi)
+            addBox(g, w, 0.10, d, PALETTE.deskWhite, 0, 0.82, 0);
+            addBox(g, 0.12, 0.82, d, PALETTE.deskWhite, -w / 2 + 0.06, 0.41, 0);
+            addBox(g, 0.12, 0.82, d, PALETTE.deskWhite,  w / 2 - 0.06, 0.41, 0);
+            // Modesty panel teal cerah
+            addBox(g, w - 0.24, 0.52, 0.08, PALETTE.tealMain, 0, 0.52, -d / 2 + 0.12);
+
+            if (withSideReturn) {
+                // Pedestal laci samping putih-teal
+                addBox(g, 0.72, 0.70, 0.96, PALETTE.deskWhite, w / 2 + 0.38, 0.35, 0.18);
+                addBox(g, 0.64, 0.48, 0.06, PALETTE.tealMain,  w / 2 + 0.38, 0.34, 0.66);
+            }
+
+            scene.add(g);
+            return g;
+        }
+
+        function createMonitorRig(x, y, z, rotY = 0, dual = false, screenTex = null) {
+            const g = new THREE.Group();
+            g.position.set(x, y, z);
+            g.rotation.y = rotY;
+
+            const addSingleScreen = (ox, oz, ry) => {
+                const sg = new THREE.Group();
+                sg.position.set(ox, 0, oz);
+                sg.rotation.y = ry;
+                addBox(sg, 0.26, 0.03, 0.18, PALETTE.monitorDark, 0, 0.015, 0);
+                addBox(sg, 0.05, 0.20, 0.05, PALETTE.monitorDark, 0, 0.11, -0.02);
+                addBox(sg, 0.88, 0.54, 0.05, PALETTE.monitorDark, 0, 0.44, 0);
+                addBox(sg, 0.82, 0.48, 0.015, 0xffffff, 0, 0.44, 0.028, {
+                    map: screenTex || createDashboardTexture('AI AGENT MONITOR', '#14b8a6'),
+                    roughness: 0.3
+                });
+                g.add(sg);
+            };
+
+            if (dual) {
+                addSingleScreen(-0.46, 0.02, 0.14);
+                addSingleScreen( 0.46, 0.02, -0.14);
+            } else {
+                addSingleScreen(0, 0, 0);
+            }
+
+            // Keyboard, mouse & sticky note kuning
+            addBox(g, 0.56, 0.025, 0.20, 0x334155, 0, 0.015, 0.32);
+            addBox(g, 0.09, 0.025, 0.13, 0x475569, 0.38, 0.015, 0.32);
+            addBox(g, 0.18, 0.01, 0.18, 0xfde047, 0.62, 0.008, 0.30);
+
+            scene.add(g);
+            return g;
+        }
+
+        function createLaptop(x, y, z, rotY = 0) {
+            const g = new THREE.Group();
+            g.position.set(x, y, z);
+            g.rotation.y = rotY;
+            addBox(g, 0.52, 0.025, 0.36, 0xe2e8f0, 0, 0.013, 0);
+            addBox(g, 0.44, 0.012, 0.22, 0x94a3b8, 0, 0.028, 0.02);
+            const lid = addBox(g, 0.52, 0.34, 0.025, 0x2d333b, 0, 0.18, -0.17, { rx: -0.18 });
+            addBox(g, 0.47, 0.29, 0.01, 0x38bdf8, 0, 0.18, -0.155, { rx: -0.18 });
+            scene.add(g);
+            return g;
+        }
+
+        function createBinderStack(x, y, z, rotY = 0, colors = [0x38bdf8, 0xfb923c, 0xfacc15, 0x334155]) {
+            const g = new THREE.Group();
+            g.position.set(x, y, z);
+            g.rotation.y = rotY;
+            colors.forEach((col, i) => {
+                addBox(g, 0.11, 0.42, 0.30, col, (i - (colors.length - 1) / 2) * 0.125, 0.21, 0);
+                // Label putih kecil di punggung map
+                addBox(g, 0.08, 0.09, 0.02, 0xffffff, (i - (colors.length - 1) / 2) * 0.125, 0.31, 0.152);
+            });
+            scene.add(g);
+            return g;
+        }
+
+        function createPottedPlant(x, y, z, scale = 1) {
+            const g = new THREE.Group();
+            g.position.set(x, y, z);
+            g.scale.setScalar(scale);
+
+            const pot = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.18, 0.14, 0.28, 12),
+                new THREE.MeshStandardMaterial({ color: PALETTE.plantPot, roughness: 0.7 })
+            );
+            pot.position.y = 0.14;
+            pot.castShadow = true;
+            g.add(pot);
+
+            const soil = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.16, 0.16, 0.04, 12),
+                new THREE.MeshStandardMaterial({ color: 0x5c4033 })
+            );
+            soil.position.y = 0.27;
+            g.add(soil);
+
+            // Daun kaktus / tanaman hijau bergaya kartun
+            const leafMat = new THREE.MeshStandardMaterial({ color: PALETTE.plantGreen, roughness: 0.75 });
+            const mainBush = new THREE.Mesh(new THREE.DodecahedronGeometry(0.22, 0), leafMat);
+            mainBush.position.set(0, 0.46, 0);
+            mainBush.castShadow = true;
+            g.add(mainBush);
+
+            const side1 = new THREE.Mesh(new THREE.DodecahedronGeometry(0.14, 0), leafMat);
+            side1.position.set(0.15, 0.39, 0.08);
+            g.add(side1);
+
+            const side2 = new THREE.Mesh(new THREE.DodecahedronGeometry(0.13, 0), leafMat);
+            side2.position.set(-0.14, 0.42, -0.07);
+            g.add(side2);
+
+            scene.add(g);
+            return g;
+        }
+
+        function createCoffeeMug(x, y, z, color = 0xffffff, withSteam = true) {
+            const g = new THREE.Group();
+            g.position.set(x, y, z);
+            const cup = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.08, 0.07, 0.16, 12),
+                new THREE.MeshStandardMaterial({ color, roughness: 0.4 })
+            );
+            cup.position.y = 0.08;
+            cup.castShadow = true;
+            g.add(cup);
+
+            const coffee = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.068, 0.068, 0.02, 12),
+                new THREE.MeshStandardMaterial({ color: 0x3b2314 })
+            );
+            coffee.position.y = 0.155;
+            g.add(coffee);
+
+            if (withSteam) {
+                for (let i = 0; i < 2; i++) {
+                    const st = new THREE.Mesh(
+                        new THREE.SphereGeometry(0.045, 6, 6),
+                        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.45 })
+                    );
+                    st.position.set(x + (i - 0.5) * 0.05, y + 0.22 + i * 0.12, z);
+                    scene.add(st);
+                    steamParticles.push({ mesh: st, baseY: y + 0.22, phase: Math.random() * Math.PI * 2 });
+                }
+            }
+            scene.add(g);
+            return g;
+        }
+
+        // =========================================================================
+        // 5. MEMBANGUN ARSITEKTUR KANTOR 3D (4 RUANGAN LENGKAP GAYA REFERENSI)
+        // =========================================================================
+        function buildOfficeEnvironment() {
+            const office = new THREE.Group();
+            scene.add(office);
+
+            // 1. Lantai Diorama Isometrik (Cokelat-Abu Matte dengan alas tebal gelap)
+            addBox(office, 28, 0.45, 24, PALETTE.floorTop, 0, -0.225, 0, { roughness: 0.92, castShadow: false });
+            addBox(office, 28.4, 0.45, 24.4, PALETTE.floorSlab, 0, -0.66, 0, { roughness: 0.95, castShadow: false });
+
+            // Garis pemisah koridor halus
+            addBox(office, 2.2, 0.015, 23.2, 0x6e6563, -0.2, 0.008, 0, { castShadow: false });
+            addBox(office, 27.2, 0.015, 2.2, 0x6e6563, 0, 0.008, 2.0, { castShadow: false });
+
+            // 2. Dinding Luar Belakang (Z = -12) — Dinding Krem + Jendela Kaca Panoramik (seperti referensi)
+            // Sisi Kiri Belakang (Ruang Bos): Jendela kaca penuh berbingkai putih
+            addBox(office, 13.8, 0.4, 0.35, PALETTE.wallCream, -7.1, 0.2, -12);
+            addBox(office, 13.8, 0.35, 0.38, PALETTE.wallTrim, -7.1, 4.4, -12);
+            addBox(office, 13.4, 3.85, 0.12, PALETTE.windowGlass, -7.1, 2.3, -12, { transparent: true, opacity: 0.72, roughness: 0.15 });
+            for (let wx = -13.8; wx <= -0.2; wx += 2.26) {
+                addBox(office, 0.18, 4.2, 0.36, PALETTE.windowFrame, wx, 2.3, -12);
+            }
+            addBox(office, 13.6, 0.14, 0.30, PALETTE.windowFrame, -7.1, 2.65, -12);
+
+            // Sisi Kanan Belakang (Ruang Kerja AI): Dinding Krem untuk TV & 3 Panel Lukisan Teal
+            addBox(office, 14.2, 4.6, 0.42, PALETTE.wallCream, 6.9, 2.3, -12);
+            addBox(office, 14.2, 0.14, 0.46, PALETTE.wallTrim, 6.9, 4.65, -12);
+
+            // 3. Dinding Luar Kiri (X = -14) — Krem Hangat (Ruang Bos + Ruang Meeting)
+            addBox(office, 0.42, 4.6, 24.4, PALETTE.wallSide, -14, 2.3, 0);
+            addBox(office, 0.46, 0.14, 24.4, PALETTE.wallTrim, -14, 4.65, 0);
+
+            // 4. Dinding Kanan Sebagian Rendah / Frame Jendela (agar tetap terlihat jelas 360°)
+            addBox(office, 0.35, 0.45, 13.0, PALETTE.wallCream, 14, 0.22, -5.5);
+            addBox(office, 0.12, 3.8, 12.6, PALETTE.windowGlass, 14, 2.3, -5.5, { transparent: true, opacity: 0.48, roughness: 0.15 });
+            addBox(office, 0.36, 0.25, 13.0, PALETTE.windowFrame, 14, 4.3, -5.5);
+            for (let wz = -11.8; wz <= 0.8; wz += 2.52) {
+                addBox(office, 0.28, 4.2, 0.18, PALETTE.windowFrame, 14, 2.3, wz);
+            }
+
+            // 5. Partisi Kaca Ruang Bos Ardy (Tersendiri, Elegan & Transparan)
+            // Partisi kanan Ruang Bos (X = -1.8, dari Z = -12 sampai Z = -0.2, dengan pintu terbuka di Z = -2.2..-0.2)
+            addBox(office, 0.20, 0.55, 8.6, PALETTE.wallCream, -1.8, 0.275, -7.5);
+            addBox(office, 0.08, 3.05, 8.4, PALETTE.windowGlass, -1.8, 2.08, -7.5, { transparent: true, opacity: 0.32 });
+            addBox(office, 0.22, 0.16, 11.6, PALETTE.windowFrame, -1.8, 3.65, -6.0);
+            [-11.6, -7.5, -3.2, -0.2].forEach(pz => addBox(office, 0.18, 3.65, 0.18, PALETTE.windowFrame, -1.8, 1.825, pz));
+
+            // Partisi depan Ruang Bos (Z = -0.2, dari X = -14 sampai X = -4.2, pintu terbuka lebar menuju koridor)
+            addBox(office, 9.8, 0.55, 0.20, PALETTE.wallCream, -9.1, 0.275, -0.2);
+            addBox(office, 9.6, 3.05, 0.08, PALETTE.windowGlass, -9.1, 2.08, -0.2, { transparent: true, opacity: 0.32 });
+            addBox(office, 12.2, 0.16, 0.22, PALETTE.windowFrame, -7.9, 3.65, -0.2);
+            [-13.8, -9.1, -4.2].forEach(px => addBox(office, 0.18, 3.65, 0.18, PALETTE.windowFrame, px, 1.825, -0.2));
+
+            // Papan Nama Ruang Bos Ardy
+            const bossSign = createTextTexture('RUANG BOS ARDY — CEO', '#0f766e', '#ffffff', 384, 64, 24);
+            addBox(office, 3.0, 0.48, 0.08, 0xffffff, -7.8, 3.92, -0.2, { map: bossSign });
+
+            // 6. Partisi Rendah Pemisah Ruang Meeting (Front-Left)
+            addBox(office, 9.0, 1.15, 0.18, PALETTE.wallCream, -9.3, 0.575, 3.2);
+            addBox(office, 9.0, 0.12, 0.24, PALETTE.tealMain, -9.3, 1.18, 3.2);
+            const meetSign = createTextTexture('RUANG MEETING KONTEN', '#334155', '#ffffff', 384, 64, 24);
+            addBox(office, 2.8, 0.44, 0.08, 0xffffff, -9.3, 1.50, 3.2, { map: meetSign });
+
+            // =====================================================================
+            // ISI RUANGAN 1: RUANG BOS ARDY (Back-Left)
+            // =====================================================================
+            // Karpet lembut di ruang bos
+            addBox(office, 9.4, 0.02, 7.6, 0x524b49, -8.2, 0.01, -6.8, { castShadow: false });
+            // Meja Eksekutif Bos Ardy (Putih-Teal Besar)
+            createCartoonDesk(-9.0, -7.6, 4.2, 1.55, 0, true);
+            createMonitorRig(-9.2, 0.87, -7.85, 0, true, createDashboardTexture('BOS ARDY — MONITOR AI', '#f59e0b'));
+            createLaptop(-7.3, 0.87, -7.45, -0.35);
+            createBinderStack(-10.6, 0.87, -7.9, 0.1);
+            createCoffeeMug(-8.0, 0.87, -7.2, 0xfef3c7, true);
+            // Kursi Bos Ardy + 2 Kursi Tamu
+            createSwivelChair(-9.2, -9.2, 0, true);
+            createSwivelChair(-10.3, -5.8, Math.PI, false);
+            createSwivelChair(-8.0, -5.8, Math.PI, false);
+            // Credenza & 3 Panel Seni Teal di dinding kiri Ruang Bos
+            addBox(office, 0.9, 0.95, 5.4, PALETTE.deskWhite, -13.3, 0.475, -6.5);
+            addBox(office, 0.08, 0.72, 4.9, PALETTE.tealMain, -12.84, 0.45, -6.5);
+            createPottedPlant(-13.3, 0.95, -8.6, 1.0);
+            createPottedPlant(-13.3, 0.95, -4.4, 1.0);
+            createBinderStack(-13.3, 0.95, -6.5, Math.PI / 2);
+            [-8.1, -6.5, -4.9].forEach(az => {
+                addBox(office, 0.08, 1.5, 1.35, PALETTE.tealArt, -13.74, 2.75, az);
+            });
+
+            // =====================================================================
+            // ISI RUANGAN 2: RUANG KERJA AI — SENTOD, JUBAIDAH, BODAT (Back-Right)
+            // Mengikuti tata letak gambar kantor kartun referensi!
+            // =====================================================================
+            // Unit TV Dinding + Panel Putih + 2 Speaker Menara + Rak Media (sesuai referensi)
+            addBox(office, 4.2, 2.1, 0.12, 0xf8fafc, 3.6, 2.85, -11.72);
+            addBox(office, 3.1, 1.55, 0.12, PALETTE.monitorDark, 3.6, 2.9, -11.62);
+            addBox(office, 2.92, 1.38, 0.03, 0xffffff, 3.6, 2.9, -11.55, {
+                map: createDashboardTexture('LIVE CLOUD PIPELINE — ANTIGRAVITY', '#14b8a6')
+            });
+            // 2 Floor-standing Speaker di kiri & kanan rak TV
+            addBox(office, 0.30, 1.95, 0.34, 0x3b424c, 1.55, 0.975, -11.3);
+            addBox(office, 0.30, 1.95, 0.34, 0x3b424c, 5.65, 0.975, -11.3);
+            // Rak media putih dengan folder warna-warni
+            addBox(office, 3.5, 1.25, 0.72, PALETTE.deskWhite, 3.6, 0.625, -11.3);
+            addBox(office, 3.2, 0.06, 0.66, 0xdbeafe, 3.6, 0.65, -11.28);
+            createBinderStack(2.8, 0.12, -11.25, 0, [0x60a5fa, 0xc084fc, 0xf472b6, 0x34d399]);
+            createBinderStack(4.4, 0.12, -11.25, 0, [0xfbbf24, 0x38bdf8, 0xfb7185, 0x94a3b8]);
+            // Tempat sampah putih di pojok TV (seperti referensi)
+            addBox(office, 0.55, 0.68, 0.55, 0xe2e8f0, 0.5, 0.34, -11.2);
+
+            // 3 Panel Lukisan Teal + Credenza Panjang Putih-Teal + 3 Tanaman Pot Mungil (persis referensi)
+            [7.9, 9.6, 11.3].forEach(ax => {
+                addBox(office, 1.42, 1.75, 0.09, PALETTE.tealArt, ax, 2.85, -11.74);
+            });
+            addBox(office, 5.8, 0.88, 0.85, PALETTE.deskWhite, 9.6, 0.44, -11.32);
+            addBox(office, 5.4, 0.66, 0.08, PALETTE.tealMain, 9.6, 0.42, -10.88);
+            createBinderStack(7.2, 0.88, -11.3, 0);
+            createPottedPlant(8.6, 0.88, -11.3, 0.75);
+            createPottedPlant(10.0, 0.88, -11.3, 0.75);
+            createPottedPlant(11.4, 0.88, -11.3, 0.75);
+
+            // Baris Meja Kerja 1 (Belakang): Sentod (kiri) & Jubaidah (kanan)
+            createCartoonDesk(3.6, -7.8, 3.6, 1.35, 0, true);
+            createMonitorRig(3.6, 0.87, -8.05, 0, false, createDashboardTexture('SENTOD — TREND ANALYTICS', '#06b6d4'));
+            createLaptop(5.75, 0.70, -7.65, -0.2);
+            createBinderStack(2.2, 0.87, -8.1, 0);
+            createSwivelChair(3.6, -6.4, Math.PI, false);
+
+            createCartoonDesk(8.5, -7.8, 3.8, 1.35, 0, true);
+            createMonitorRig(8.5, 0.87, -8.05, 0, true, createDashboardTexture('JUBAIDAH — VIDEO TIMELINE 4K', '#e11d48'));
+            createBinderStack(10.0, 0.87, -8.1, 0);
+            createSwivelChair(8.5, -6.4, Math.PI, false);
+
+            // Baris Meja Kerja 2 (Depan): Bodat (kiri) + Meja Tambahan Konten (kanan)
+            createCartoonDesk(4.2, -2.5, 3.8, 1.35, 0, true);
+            createMonitorRig(4.2, 0.87, -2.75, 0, false, createDashboardTexture('BODAT — CAPTION & UPLOADER', '#10b981'));
+            createBinderStack(2.7, 0.87, -2.7, 0);
+            createPottedPlant(5.6, 0.87, -2.8, 0.65);
+            createSwivelChair(4.2, -1.1, Math.PI, false);
+
+            createCartoonDesk(9.2, -2.5, 3.4, 1.35, 0, false);
+            createLaptop(8.6, 0.87, -2.6, 0.1);
+            createLaptop(10.0, 0.87, -2.6, -0.15);
+            createBinderStack(7.8, 0.87, -2.65, 0);
+            createPottedPlant(10.6, 0.87, -2.7, 0.65);
+            createSwivelChair(9.2, -1.1, Math.PI, false);
+
+            // Papan Nama Ruang Kerja AI
+            const workSign = createTextTexture('RUANG KERJA AI AGENTS', '#0d9488', '#ffffff', 384, 64, 24);
+            addBox(office, 3.0, 0.46, 0.08, 0xffffff, 6.8, 4.1, -11.75, { map: workSign });
+
+            // =====================================================================
+            // ISI RUANGAN 3: RUANG MEETING KONTEN (Front-Left)
+            // =====================================================================
+            addBox(office, 9.8, 0.02, 7.2, 0x554d4b, -8.4, 0.01, 7.2, { castShadow: false });
+            // Meja Meeting Putih-Teal Besar
+            addBox(office, 6.4, 0.12, 2.7, PALETTE.deskWhite, -8.6, 0.82, 7.2);
+            addBox(office, 5.2, 0.72, 0.16, PALETTE.tealMain, -8.6, 0.42, 7.2);
+            addBox(office, 0.20, 0.78, 2.1, PALETTE.deskWhite, -11.2, 0.39, 7.2);
+            addBox(office, 0.20, 0.78, 2.1, PALETTE.deskWhite, -6.0, 0.39, 7.2);
+
+            // Laptop & cangkir di meja meeting
+            createLaptop(-10.4, 0.88, 6.9, 0.2);
+            createLaptop(-7.2, 0.88, 7.5, Math.PI - 0.15);
+            createCoffeeMug(-9.0, 0.88, 6.8, 0xffffff, false);
+            createCoffeeMug(-8.2, 0.88, 7.6, 0xfef08a, false);
+
+            // Kursi Meeting Kuning Pastel (1 kepala meja Bos Ardy + 4 sisi samping)
+            createSwivelChair(-12.5, 7.2, Math.PI / 2, true);
+            createSwivelChair(-10.6, 5.2, 0, false);
+            createSwivelChair(-8.6,  5.2, 0, false);
+            createSwivelChair(-6.6,  5.2, 0, false);
+            createSwivelChair(-10.6, 9.2, Math.PI, false);
+            createSwivelChair(-8.6,  9.2, Math.PI, false);
+            createSwivelChair(-6.6,  9.2, Math.PI, false);
+
+            // Papan Presentasi Pipeline di dinding kiri Ruang Meeting
+            addBox(office, 0.14, 2.4, 5.2, 0x334155, -13.72, 2.55, 7.2);
+            addBox(office, 0.04, 2.24, 5.0, 0xffffff, -13.63, 2.55, 7.2, { map: createWhiteboardTexture(), roughness: 0.35 });
+            createPottedPlant(-13.1, 0, 10.6, 1.35);
+            createPottedPlant(-13.1, 0, 4.1, 1.15);
+
+            // =====================================================================
+            // ISI RUANGAN 4: AREA NGOPI & LOUNGE AI (Front-Right)
+            // =====================================================================
+            // Karpet hangat area lounge
+            addBox(office, 10.6, 0.025, 7.8, PALETTE.coffeeRug, 7.6, 0.012, 7.2, { castShadow: false });
+
+            // Coffee Bar Counter (Putih + Aksen Teal + Top Kayu Hangat)
+            addBox(office, 5.4, 1.05, 1.1, PALETTE.deskWhite, 8.6, 0.525, 10.6);
+            addBox(office, 5.2, 0.82, 0.08, PALETTE.tealMain, 8.6, 0.48, 10.02);
+            addBox(office, 5.6, 0.10, 1.24, PALETTE.woodWarm, 8.6, 1.10, 10.6);
+
+            // Mesin Espresso Detail di atas meja bar
+            addBox(office, 0.95, 0.72, 0.65, 0x334155, 7.0, 1.51, 10.6);
+            addBox(office, 0.82, 0.24, 0.12, 0x94a3b8, 7.0, 1.68, 10.26);
+            addBox(office, 0.14, 0.16, 0.14, 0xef4444, 7.3, 1.72, 10.24);
+            createCoffeeMug(7.0, 1.15, 10.35, 0xffffff, true);
+            createCoffeeMug(8.2, 1.15, 10.45, 0xfde047, true);
+            // Etalase kue / croissant kaca
+            addBox(office, 1.15, 0.56, 0.62, 0xe0f2fe, 9.8, 1.43, 10.6, { transparent: true, opacity: 0.45 });
+            addBox(office, 0.25, 0.12, 0.25, 0xd97706, 9.6, 1.22, 10.6);
+            addBox(office, 0.25, 0.12, 0.25, 0xb45309, 10.0, 1.22, 10.6);
+
+            // Papan Nama Area Ngopi
+            const cafeSign = createTextTexture('COFFEE BAR & LOUNGE AI', '#92400e', '#fef3c7', 384, 64, 24);
+            addBox(office, 2.9, 0.44, 0.08, 0xffffff, 8.6, 1.52, 11.2, { map: cafeSign });
+
+            // Sofa L-Shape Nyaman (Krem & Bantal Teal/Kuning)
+            // Sofa sisi atas (menghadap selatan ke meja kopi)
+            addBox(office, 3.8, 0.46, 1.15, 0xe7dfd5, 6.3, 0.23, 4.75);
+            addBox(office, 3.8, 0.62, 0.28, 0xd6cbc0, 6.3, 0.68, 4.30);
+            addBox(office, 0.45, 0.35, 0.18, PALETTE.tealMain, 5.1, 0.62, 4.55);
+            addBox(office, 0.45, 0.35, 0.18, PALETTE.chairYellow, 7.5, 0.62, 4.55);
+
+            // Sofa sisi kiri (menghadap timur ke meja kopi)
+            addBox(office, 1.15, 0.46, 3.2, 0xe7dfd5, 3.85, 0.23, 7.0);
+            addBox(office, 0.28, 0.62, 3.2, 0xd6cbc0, 3.40, 0.68, 7.0);
+            addBox(office, 0.18, 0.35, 0.45, PALETTE.tealMain, 3.65, 0.62, 6.4);
+
+            // Meja Kopi Rendah + Cangkir Kopi Berasap
+            addBox(office, 2.2, 0.09, 1.3, PALETTE.woodWarm, 6.3, 0.50, 7.0);
+            [[-0.95, -0.5], [0.95, -0.5], [-0.95, 0.5], [0.95, 0.5]].forEach(([lx, lz]) => {
+                addBox(office, 0.08, 0.46, 0.08, 0x334155, 6.3 + lx, 0.23, 7.0 + lz);
+            });
+            createCoffeeMug(5.8, 0.55, 6.8, 0xffffff, true);
+            createCoffeeMug(6.7, 0.55, 7.2, 0xfef08a, true);
+
+            // Meja Bundar Kecil + 2 Kursi Bar di kanan Area Ngopi (untuk Bodat / AI santai)
+            const bistroTop = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.85, 0.85, 0.08, 20),
+                new THREE.MeshStandardMaterial({ color: PALETTE.deskWhite, roughness: 0.6 })
+            );
+            bistroTop.position.set(11.3, 0.80, 6.0);
+            bistroTop.castShadow = true;
+            office.add(bistroTop);
+            const bistroLeg = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.08, 0.32, 0.78, 12),
+                new THREE.MeshStandardMaterial({ color: PALETTE.tealMain, roughness: 0.5 })
+            );
+            bistroLeg.position.set(11.3, 0.39, 6.0);
+            office.add(bistroLeg);
+            createCoffeeMug(11.2, 0.84, 6.0, 0x99f6e4, true);
+            createSwivelChair(12.6, 6.0, -Math.PI / 2, false);
+
+            // Tanaman besar penghias sudut lounge
+            createPottedPlant(12.8, 0, 10.6, 1.4);
+            createPottedPlant(3.6, 0, 10.5, 1.25);
+        }
+
+        // =========================================================================
+        // 6. MEMBANGUN 4 KARAKTER 3D DETAIL (SESUAI 4 LEMBAR REFERENSI + EYE BLINK)
+        // =========================================================================
+        function createCharacter(charKey) {
+            const root = new THREE.Group();
+            root.userData.agentKey = charKey;
+
+            const bodyGroup = new THREE.Group();
+            root.add(bodyGroup);
+
+            const registerClickable = (mesh) => {
+                mesh.userData.agentKey = charKey;
+                clickableAgentMeshes.push(mesh);
+                return mesh;
+            };
+
+            const box = (parent, w, h, d, color, x, y, z, opts = {}) => {
+                const m = addBox(parent, w, h, d, color, x, y, z, opts);
+                return registerClickable(m);
+            };
+
+            // Palet spesifik tiap karakter
+            let skinColor = 0xf2c6aa;
+            let eyeColor = 0x1e293b;
+            let tagColor = '#14b8a6';
+            let tagName = charKey;
+            let torsoW = 0.54, torsoD = 0.30, armW = 0.16;
+
+            if (charKey === 'ardy') {
+                skinColor = 0xd99e7c;
+                eyeColor = 0x1f2937;
+                tagColor = '#f59e0b';
+                tagName = 'Bos Ardy';
+                torsoW = 0.68;
+                torsoD = 0.42;
+                armW = 0.21;
+            } else if (charKey === 'sentod') {
+                skinColor = 0xf1c2a5;
+                eyeColor = 0x15803d;
+                tagColor = '#06b6d4';
+                tagName = 'Sentod';
+            } else if (charKey === 'jubaidah') {
+                skinColor = 0xf5c7ad;
+                eyeColor = 0x0284c7;
+                tagColor = '#e11d48';
+                tagName = 'Jubaidah';
+            } else if (charKey === 'bodat') {
+                skinColor = 0xf4d2c4;
+                eyeColor = 0x475569;
+                tagColor = '#10b981';
+                tagName = 'Bodat';
+            }
+
+            // --- KAKI (Kiri & Kanan dengan pivot di pinggul y = 0.66) ---
+            const leftLeg = new THREE.Group();
+            leftLeg.position.set(-0.14, 0.66, 0);
+            bodyGroup.add(leftLeg);
+
+            const rightLeg = new THREE.Group();
+            rightLeg.position.set(0.14, 0.66, 0);
+            bodyGroup.add(rightLeg);
+
+            if (charKey === 'ardy') {
+                box(leftLeg,  0.22, 0.50, 0.24, 0x2d3345, 0, -0.26, 0);
+                box(rightLeg, 0.22, 0.50, 0.24, 0x2d3345, 0, -0.26, 0);
+                box(leftLeg,  0.23, 0.16, 0.30, 0x3f2e2b, 0, -0.58, 0.03);
+                box(rightLeg, 0.23, 0.16, 0.30, 0x3f2e2b, 0, -0.58, 0.03);
+            } else if (charKey === 'sentod') {
+                // Celana taktis biru-teal + boots gelap
+                box(leftLeg,  0.18, 0.48, 0.20, 0x265d6b, 0, -0.25, 0);
+                box(rightLeg, 0.18, 0.48, 0.20, 0x265d6b, 0, -0.25, 0);
+                box(leftLeg,  0.19, 0.18, 0.26, 0x27272a, 0, -0.57, 0.03);
+                box(rightLeg, 0.19, 0.18, 0.26, 0x27272a, 0, -0.57, 0.03);
+            } else if (charKey === 'jubaidah') {
+                // Kaki + sepatu maroon
+                box(leftLeg,  0.15, 0.46, 0.16, skinColor, 0, -0.25, 0);
+                box(rightLeg, 0.15, 0.46, 0.16, skinColor, 0, -0.25, 0);
+                box(leftLeg,  0.17, 0.18, 0.24, 0x7c2d3a, 0, -0.57, 0.03);
+                box(rightLeg, 0.17, 0.18, 0.24, 0x7c2d3a, 0, -0.57, 0.03);
+            } else {
+                // Bodat: legging gelap + boots krem
+                box(leftLeg,  0.17, 0.46, 0.18, 0x36312f, 0, -0.25, 0);
+                box(rightLeg, 0.17, 0.46, 0.18, 0x36312f, 0, -0.25, 0);
+                box(leftLeg,  0.19, 0.19, 0.26, 0xb8ae99, 0, -0.57, 0.03);
+                box(rightLeg, 0.19, 0.19, 0.26, 0xb8ae99, 0, -0.57, 0.03);
+            }
+
+            // --- TORSO / BADAN (y = 0.66 .. 1.34) ---
+            const torso = new THREE.Group();
+            torso.position.set(0, 1.0, 0);
+            bodyGroup.add(torso);
+
+            if (charKey === 'ardy') {
+                // Kaos kuning-hijau + Apron gelap bertali silang X di punggung
+                box(torso, torsoW, 0.68, torsoD, 0xc7cf5f, 0, 0, 0);
+                box(torso, torsoW + 0.04, 0.56, 0.12, 0x3d4252, 0, -0.08, torsoD / 2 - 0.02); // depan apron
+                box(torso, torsoW + 0.04, 0.28, torsoD + 0.04, 0x3d4252, 0, -0.26, 0.02);     // perut apron
+                // Tali apron silang X di belakang (khas Char No. 1)
+                box(torso, 0.09, 0.56, 0.05, 0x2b2f3b, 0, 0.04, -torsoD / 2 - 0.02, { rx: 0 });
+                const strap1 = box(torso, 0.08, 0.58, 0.04, 0x2b2f3b, 0, 0.04, -torsoD / 2 - 0.03);
+                strap1.rotation.z = 0.68;
+                const strap2 = box(torso, 0.08, 0.58, 0.04, 0x2b2f3b, 0, 0.04, -torsoD / 2 - 0.03);
+                strap2.rotation.z = -0.68;
+            } else if (charKey === 'sentod') {
+                // Seragam taktis biru-teal + sabuk pouch & gesper perak
+                box(torso, torsoW, 0.66, torsoD, 0x2b6b7a, 0, 0, 0);
+                box(torso, 0.22, 0.16, 0.04, 0x225561, -0.14, 0.10, torsoD / 2 + 0.01);
+                box(torso, 0.22, 0.16, 0.04, 0x225561,  0.14, 0.10, torsoD / 2 + 0.01);
+                box(torso, torsoW + 0.05, 0.12, torsoD + 0.06, 0x27272a, 0, -0.25, 0);
+                box(torso, 0.12, 0.11, 0.06, 0xe2e8f0, 0, -0.25, torsoD / 2 + 0.03); // gesper
+                box(torso, 0.16, 0.16, 0.10, 0x3f3f46, 0.22, -0.24, torsoD / 2 + 0.03); // pouch
+            } else if (charKey === 'jubaidah') {
+                // Kemeja putih + Rompi maroon + Dasi kuning + ID Badge + Rok biru tua
+                box(torso, torsoW, 0.60, torsoD, 0xffffff, 0, 0.03, 0);
+                box(torso, torsoW + 0.02, 0.44, torsoD + 0.02, 0x8b3643, 0, 0.06, 0);
+                box(torso, 0.08, 0.28, 0.04, 0xeab308, 0, 0.13, torsoD / 2 + 0.02); // dasi kuning
+                box(torso, 0.14, 0.10, 0.03, 0xe2e8f0, 0.13, 0.08, torsoD / 2 + 0.025); // ID badge
+                box(torso, torsoW + 0.08, 0.28, torsoD + 0.08, 0x344d5e, 0, -0.34, 0); // rok biru tua
+            } else {
+                // Bodat: Sweater rajut longgar cokelat-khaki
+                box(torso, torsoW + 0.06, 0.72, torsoD + 0.06, 0x9a8764, 0, -0.02, 0);
+                box(torso, torsoW + 0.08, 0.10, torsoD + 0.08, 0x827051, 0, -0.35, 0); // hem bawah
+                box(torso, 0.26, 0.08, 0.12, skinColor, 0, 0.32, 0.06); // leher kerah lebar
+            }
+
+            // --- LENGAN (Kiri & Kanan dengan pivot di bahu y = 1.28) ---
+            const leftArm = new THREE.Group();
+            leftArm.position.set(-(torsoW / 2 + armW / 2 + 0.02), 1.28, 0);
+            bodyGroup.add(leftArm);
+
+            const rightArm = new THREE.Group();
+            rightArm.position.set(torsoW / 2 + armW / 2 + 0.02, 1.28, 0);
+            bodyGroup.add(rightArm);
+
+            if (charKey === 'ardy') {
+                // Lengan pendek kuning-hijau + lengan berotot tanned
+                box(leftArm,  armW, 0.20, armW, 0xc7cf5f, 0, -0.08, 0);
+                box(rightArm, armW, 0.20, armW, 0xc7cf5f, 0, -0.08, 0);
+                box(leftArm,  armW - 0.02, 0.38, armW - 0.02, skinColor, 0, -0.36, 0);
+                box(rightArm, armW - 0.02, 0.38, armW - 0.02, skinColor, 0, -0.36, 0);
+            } else if (charKey === 'sentod') {
+                // Lengan panjang biru-teal + patch kuning + sarung tangan hitam
+                box(leftArm,  armW, 0.44, armW, 0x2b6b7a, 0, -0.20, 0);
+                box(rightArm, armW, 0.44, armW, 0x2b6b7a, 0, -0.20, 0);
+                box(leftArm,  0.03, 0.12, 0.11, 0xeab308, -armW / 2 - 0.01, -0.14, 0); // patch kuning
+                box(leftArm,  armW - 0.01, 0.12, armW - 0.01, 0x27272a, 0, -0.47, 0);
+                box(rightArm, armW - 0.01, 0.12, armW - 0.01, 0x27272a, 0, -0.47, 0);
+            } else if (charKey === 'jubaidah') {
+                // Lengan kemeja putih pendek + tangan + clipboard biru-abu di tangan kanan
+                box(leftArm,  armW, 0.20, armW, 0xffffff, 0, -0.08, 0);
+                box(rightArm, armW, 0.20, armW, 0xffffff, 0, -0.08, 0);
+                box(leftArm,  armW - 0.03, 0.34, armW - 0.03, skinColor, 0, -0.34, 0);
+                box(rightArm, armW - 0.03, 0.34, armW - 0.03, skinColor, 0, -0.34, 0);
+                box(rightArm, 0.06, 0.32, 0.24, 0x334155, 0.06, -0.42, 0.14); // clipboard
+                box(rightArm, 0.07, 0.06, 0.06, 0xf59e0b, 0.06, -0.29, 0.23); // klip kuning
+            } else {
+                // Bodat: lengan panjang sweater khaki longgar
+                box(leftArm,  armW + 0.02, 0.48, armW + 0.02, 0x9a8764, 0, -0.22, 0);
+                box(rightArm, armW + 0.02, 0.48, armW + 0.02, 0x9a8764, 0, -0.22, 0);
+                box(leftArm,  armW - 0.03, 0.10, armW - 0.03, skinColor, 0, -0.50, 0);
+                box(rightArm, armW - 0.03, 0.10, armW - 0.03, skinColor, 0, -0.50, 0);
+            }
+
+            // --- KEPALA + MATA (DENGAN ANIMASI KEDIPAN / EYE BLINK) ---
+            const head = new THREE.Group();
+            head.position.set(0, 1.58, 0);
+            bodyGroup.add(head);
+
+            const headSize = charKey === 'ardy' ? 0.48 : 0.44;
+            box(head, headSize, headSize, headSize, skinColor, 0, 0, 0);
+
+            // Sepasang mata (akan di-scale Y menjadi 0.1 saat berkedip)
+            const leftEye  = box(head, 0.065, 0.075, 0.03, eyeColor, -0.10, 0.02, headSize / 2 + 0.01);
+            const rightEye = box(head, 0.065, 0.075, 0.03, eyeColor,  0.10, 0.02, headSize / 2 + 0.01);
+
+            if (charKey === 'ardy') {
+                // Botak atas, rambut samping & belakang gelap, kumis handlebar tebal
+                box(head, 0.09, 0.26, 0.36, 0x2c2524, -headSize / 2 - 0.02, -0.02, -0.04);
+                box(head, 0.09, 0.26, 0.36, 0x2c2524,  headSize / 2 + 0.02, -0.02, -0.04);
+                box(head, headSize + 0.06, 0.26, 0.10, 0x2c2524, 0, -0.02, -headSize / 2 - 0.02);
+                // Kumis tebal melengkung ke bawah
+                box(head, 0.38, 0.11, 0.09, 0x2c2524, 0, -0.11, headSize / 2 + 0.03);
+                box(head, 0.10, 0.12, 0.08, 0x2c2524, -0.19, -0.15, headSize / 2 + 0.02);
+                box(head, 0.10, 0.12, 0.08, 0x2c2524,  0.19, -0.15, headSize / 2 + 0.02);
+            } else if (charKey === 'sentod') {
+                // Rambut cokelat panjang + Topi Hitam bertuliskan "ERF"
+                box(head, 0.10, 0.62, 0.32, 0x694a38, -headSize / 2 - 0.03, -0.14, -0.04);
+                box(head, 0.10, 0.62, 0.32, 0x694a38,  headSize / 2 + 0.03, -0.14, -0.04);
+                box(head, headSize + 0.06, 0.66, 0.12, 0x694a38, 0, -0.16, -headSize / 2 - 0.04);
+                // Topi ERF
+                box(head, headSize + 0.06, 0.20, headSize + 0.06, 0x2b2f36, 0, 0.19, 0);
+                box(head, headSize + 0.04, 0.05, 0.24, 0x1f2329, 0, 0.11, headSize / 2 + 0.10);
+                const erfTex = createTextTexture('ERF', '#2b2f36', '#ffffff', 128, 64, 40);
+                box(head, 0.28, 0.13, 0.02, 0xffffff, 0, 0.19, headSize / 2 + 0.04, { map: erfTex });
+            } else if (charKey === 'jubaidah') {
+                // Rambut cokelat dengan ponytail tinggi + Headset & Mic
+                box(head, headSize + 0.06, 0.18, headSize + 0.06, 0x6b3e2e, 0, 0.18, -0.01);
+                box(head, headSize + 0.06, 0.42, 0.12, 0x6b3e2e, 0, 0.02, -headSize / 2 - 0.03);
+                box(head, 0.09, 0.30, 0.12, 0x6b3e2e, -headSize / 2 - 0.02, 0.02, 0.12);
+                box(head, 0.09, 0.26, 0.12, 0x6b3e2e,  headSize / 2 + 0.02, 0.03, 0.12);
+                // Ponytail di belakang atas
+                box(head, 0.22, 0.24, 0.22, 0x6b3e2e, 0, 0.16, -headSize / 2 - 0.16);
+                box(head, 0.16, 0.26, 0.14, 0x5c3325, 0, 0.02, -headSize / 2 - 0.22);
+                // Headset & Mikrofon
+                box(head, headSize + 0.14, 0.06, 0.08, 0x64748b, 0, 0.28, 0.02);
+                box(head, 0.08, 0.16, 0.14, 0x94a3b8, -headSize / 2 - 0.06, 0.02, 0.02);
+                box(head, 0.08, 0.16, 0.14, 0x94a3b8,  headSize / 2 + 0.06, 0.02, 0.02);
+                box(head, 0.18, 0.03, 0.03, 0x475569, 0.14, -0.09, headSize / 2 + 0.05);
+            } else {
+                // Bodat: Rambut pendek mint-perak acak menutupi mata kanan
+                box(head, headSize + 0.09, 0.22, headSize + 0.09, 0x8ea89c, 0, 0.17, -0.01);
+                box(head, 0.12, 0.32, headSize + 0.06, 0x8ea89c, -headSize / 2 - 0.03, 0.04, -0.02);
+                box(head, 0.12, 0.34, headSize + 0.06, 0x8ea89c,  headSize / 2 + 0.03, 0.03, -0.02);
+                box(head, headSize + 0.08, 0.38, 0.14, 0x7b968a, 0, 0.0, -headSize / 2 - 0.04);
+                // Poni asimetris menutupi sebelah mata
+                box(head, 0.26, 0.18, 0.07, 0x8ea89c, 0.09, 0.05, headSize / 2 + 0.02);
+            }
+
+            // Label nama melayang
+            const nameTag = createNameTagSprite(tagName, tagColor);
+            nameTag.position.set(0, 2.25, 0);
+            root.add(nameTag);
+
+            scene.add(root);
+
+            return {
+                key: charKey,
+                root,
+                bodyGroup,
+                head,
+                leftArm,
+                rightArm,
+                leftLeg,
+                rightLeg,
+                leftEye,
+                rightEye,
+                waypoints: [],
+                finalRotY: 0,
+                isSitting: false,
+                targetSit: false,
+                currentRoom: charKey === 'ardy' ? 'boss' : 'workspace',
+                liveStatus: '',
+                liveTask: '',
+                phase: Math.random() * Math.PI * 2,
+                nextBlinkTime: 1.5 + Math.random() * 3.0,
+                blinkEndTime: 0
+            };
+        }
+
+        // =========================================================================
+        // 7. NAVIGASI KARAKTER ANTAR-RUANGAN (INDEPENDEN PER AGEN)
+        // =========================================================================
+        const ROOM_TARGETS = {
+            ardy: {
+                boss:      { pos: new THREE.Vector3(-9.2, 0, -9.2),  rotY: 0,           sit: true,  entry: [new THREE.Vector3(-2.9, 0, 1.8), new THREE.Vector3(-2.9, 0, -4.5), new THREE.Vector3(-6.2, 0, -9.2)] },
+                workspace: { pos: new THREE.Vector3(6.2, 0, -4.2),   rotY: Math.PI,     sit: false, entry: [new THREE.Vector3(2.2, 0, -2.5)] },
+                meeting:   { pos: new THREE.Vector3(-12.5, 0, 7.2),  rotY: Math.PI / 2, sit: true,  entry: [new THREE.Vector3(-2.4, 0, 3.2), new THREE.Vector3(-12.5, 0, 4.2)] },
+                coffee:    { pos: new THREE.Vector3(8.5, 0, 8.8),    rotY: 0,           sit: false, entry: [new THREE.Vector3(2.8, 0, 4.5), new THREE.Vector3(8.5, 0, 8.2)] }
+            },
+            sentod: {
+                boss:      { pos: new THREE.Vector3(-10.3, 0, -5.8), rotY: Math.PI,     sit: true,  entry: [new THREE.Vector3(-2.9, 0, 1.8), new THREE.Vector3(-2.9, 0, -4.5)] },
+                workspace: { pos: new THREE.Vector3(3.6, 0, -6.4),   rotY: Math.PI,     sit: true,  entry: [new THREE.Vector3(2.0, 0, -4.5)] },
+                meeting:   { pos: new THREE.Vector3(-10.6, 0, 5.2),  rotY: 0,           sit: true,  entry: [new THREE.Vector3(-2.4, 0, 3.2), new THREE.Vector3(-10.6, 0, 4.0)] },
+                coffee:    { pos: new THREE.Vector3(6.3, 0, 4.9),    rotY: 0.15,        sit: true,  entry: [new THREE.Vector3(2.8, 0, 3.8)] }
+            },
+            jubaidah: {
+                boss:      { pos: new THREE.Vector3(-8.0, 0, -5.8),  rotY: Math.PI,     sit: true,  entry: [new THREE.Vector3(-2.9, 0, 1.8), new THREE.Vector3(-2.9, 0, -4.5)] },
+                workspace: { pos: new THREE.Vector3(8.5, 0, -6.4),   rotY: Math.PI,     sit: true,  entry: [new THREE.Vector3(6.8, 0, -4.5)] },
+                meeting:   { pos: new THREE.Vector3(-8.6, 0, 5.2),   rotY: 0,           sit: true,  entry: [new THREE.Vector3(-2.4, 0, 3.2), new THREE.Vector3(-8.6, 0, 4.0)] },
+                coffee:    { pos: new THREE.Vector3(4.1, 0, 7.0),    rotY: Math.PI / 2, sit: true,  entry: [new THREE.Vector3(2.8, 0, 4.5)] }
+            },
+            bodat: {
+                boss:      { pos: new THREE.Vector3(-6.2, 0, -5.2),  rotY: -Math.PI/2,  sit: false, entry: [new THREE.Vector3(-2.9, 0, 1.8), new THREE.Vector3(-2.9, 0, -4.5)] },
+                workspace: { pos: new THREE.Vector3(4.2, 0, -1.1),   rotY: Math.PI,     sit: true,  entry: [new THREE.Vector3(2.2, 0, 0.6)] },
+                meeting:   { pos: new THREE.Vector3(-6.6, 0, 9.2),   rotY: Math.PI,     sit: true,  entry: [new THREE.Vector3(-2.4, 0, 3.2), new THREE.Vector3(-4.2, 0, 9.2)] },
+                coffee:    { pos: new THREE.Vector3(12.6, 0, 6.0),   rotY: -Math.PI / 2, sit: true, entry: [new THREE.Vector3(10.5, 0, 3.8)] }
+            }
+        };
+
+        function getRoomExit(pos) {
+            if (pos.x < -1.5 && pos.z < 0) {
+                return [new THREE.Vector3(-2.9, 0, -3.5), new THREE.Vector3(-2.9, 0, 1.8)];
+            }
+            if (pos.x < -1.5 && pos.z >= 0) {
+                return [new THREE.Vector3(-2.4, 0, 3.2)];
+            }
+            if (pos.x >= -1.5 && pos.z < 1.8) {
+                return [new THREE.Vector3(1.6, 0, 1.2)];
+            }
+            return [new THREE.Vector3(2.2, 0, 3.2)];
+        }
+
+        function moveAgentToRoom(key, room, instant = false) {
+            const ag = agents[key];
+            if (!ag) return;
+            const validRoom = ROOM_TARGETS[key][room] ? room : (key === 'ardy' ? 'boss' : 'workspace');
+
+            if (!instant && ag.currentRoom === validRoom) return;
+
+            const cfg = ROOM_TARGETS[key][validRoom];
+            ag.currentRoom = validRoom;
+            ag.finalRotY = cfg.rotY;
+            ag.targetSit = cfg.sit;
+
+            if (instant) {
+                ag.root.position.copy(cfg.pos);
+                ag.root.rotation.y = cfg.rotY;
+                ag.waypoints = [];
+                ag.isSitting = cfg.sit;
+            } else {
+                const exitPath = getRoomExit(ag.root.position);
+                ag.waypoints = [...exitPath, HUB.clone(), ...cfg.entry.map(v => v.clone()), cfg.pos.clone()];
+                ag.isSitting = false;
+            }
+        }
+
+        function assignModeTargets(mode, instant = false) {
+            Object.keys(agents).forEach(key => {
+                let targetRoom = mode;
+                if (mode === 'work') {
+                    targetRoom = key === 'ardy' ? 'boss' : 'workspace';
+                }
+                moveAgentToRoom(key, targetRoom, instant);
+            });
+        }
+
+        // =========================================================================
+        // 8. KONTROL UI, KAMERA 360°, RAYCASTER & LOOP ANIMASI
+        // =========================================================================
+        function showToast(msg) {
+            const box = document.getElementById('toast-box');
+            const txt = document.getElementById('toast-text');
+            if (!box || !txt) return;
+            txt.textContent = msg;
+            box.classList.remove('opacity-0');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => box.classList.add('opacity-0'), 2800);
+        }
+
+        window.toggleRightPanel = function() {
+            const body = document.getElementById('right-panel-body');
+            const btn = document.getElementById('btn-toggle-panel');
+            if (!body || !btn) return;
+            const isHidden = body.classList.toggle('hidden');
+            btn.textContent = isHidden ? 'Buka' : 'Tutup';
+        };
+
+        window.moveCameraTo = function(presetKey) {
+            const preset = CAMERA_PRESETS[presetKey];
+            if (!preset || !camera || !controls) return;
+
+            cameraAnim = {
+                startPos: camera.position.clone(),
+                endPos: preset.pos.clone(),
+                startTarget: controls.target.clone(),
+                endTarget: preset.target.clone(),
+                progress: 0
+            };
+
+            document.querySelectorAll('.cam-btn').forEach(b => {
+                b.classList.remove('bg-slate-900', 'text-white');
+                b.classList.add('text-slate-700', 'hover:bg-slate-100');
+            });
+            const active = document.getElementById(`cam-${presetKey}`);
+            if (active) {
+                active.classList.remove('text-slate-700', 'hover:bg-slate-100');
+                active.classList.add('bg-slate-900', 'text-white');
+            }
+            showToast(`📷 ${preset.label}`);
+        };
+
+        window.toggleAutoRotate = function() {
+            autoRotateEnabled = !autoRotateEnabled;
+            if (controls) controls.autoRotate = autoRotateEnabled;
+            const btn = document.getElementById('btn-autorotate');
+            if (btn) {
+                btn.classList.toggle('bg-teal-600', autoRotateEnabled);
+                btn.classList.toggle('text-white', autoRotateEnabled);
+                btn.classList.toggle('text-slate-600', !autoRotateEnabled);
+            }
+            showToast(autoRotateEnabled ? '🔄 Auto-rotate 360° aktif' : '⏹️ Auto-rotate dimatikan');
+        };
+
+        window.setOfficeMode = function(mode) {
+            if (isSimRunning) stopPipelineSimulation();
+            if (isCloudPollingActive) {
+                clearInterval(cloudPollingTimer);
+                cloudPollingTimer = null;
+                isCloudPollingActive = false;
+                const btn = document.getElementById('btn-toggle-polling');
+                if (btn) {
+                    btn.textContent = 'Aktifkan Live Sync';
+                    btn.classList.remove('bg-rose-600', 'hover:bg-rose-700');
+                    btn.classList.add('bg-teal-600', 'hover:bg-teal-700');
+                }
+                setCloudIndicator('idle', 'Manual');
+            }
+            currentMode = mode;
+            assignModeTargets(mode, false);
+
+            // Update status label
+            const badge = document.getElementById('current-mode-badge');
+            const statusMap = {
+                work:    { badge: 'Kerja',   ardy: 'Mengawasi', sentod: 'Riset Tren',   jubaidah: 'Edit 4K',      bodat: 'Tulis Caption' },
+                meeting: { badge: 'Meeting', ardy: 'Pimpin Rapat', sentod: 'Presentasi', jubaidah: 'Bahas Visual', bodat: 'Catat Strategi' },
+                coffee:  { badge: 'Ngopi',   ardy: 'Pantau Santai', sentod: 'Ngopi Sofa', jubaidah: 'Ngopi Latte', bodat: 'Santai Bistro' }
+            };
+            const s = statusMap[mode] || statusMap.work;
+            if (badge) badge.textContent = s.badge;
+            ['ardy', 'sentod', 'jubaidah', 'bodat'].forEach(k => {
+                const el = document.getElementById(`status-${k}`);
+                if (el) el.textContent = s[k];
+                if (agents[k]) {
+                    agents[k].liveStatus = s[k];
+                    agents[k].liveTask = '';
+                }
+            });
+
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('bg-teal-600', 'text-white', 'shadow-sm');
+                btn.classList.add('bg-slate-100', 'text-slate-600', 'border', 'border-slate-200');
+            });
+            const activeBtn = document.getElementById(`btn-mode-${mode}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-slate-100', 'text-slate-600', 'border', 'border-slate-200');
+                activeBtn.classList.add('bg-teal-600', 'text-white', 'shadow-sm');
+            }
+
+            const modeToast = mode === 'work' ? '💼 Semua agen menuju meja kerja!'
+                : mode === 'meeting' ? '📊 Semua tim berkumpul di Ruang Meeting!'
+                : '☕ Waktunya ngopi santai di Area Lounge!';
+            showToast(modeToast);
+        };
+
+        window.focusAgent = function(agentKey) {
+            const ag = agents[agentKey];
+            if (!ag) return;
+
+            const p = ag.root.position.clone();
+            cameraAnim = {
+                startPos: camera.position.clone(),
+                endPos: new THREE.Vector3(p.x + 4.8, 5.2, p.z + 5.6),
+                startTarget: controls.target.clone(),
+                endTarget: new THREE.Vector3(p.x, 1.25, p.z),
+                progress: 0
+            };
+
+            const info = AGENT_INFO[agentKey];
+            document.getElementById('inspect-name').textContent = info.name;
+            document.getElementById('inspect-role').textContent = info.role;
+            document.getElementById('inspect-desc').textContent = info.desc;
+
+            const liveTaskEl = document.getElementById('inspect-live-task');
+            if (ag.liveTask || ag.liveStatus) {
+                liveTaskEl.textContent = `☁️ Live Status: ${ag.liveStatus || '-'}${ag.liveTask ? ' — ' + ag.liveTask : ''}`;
+                liveTaskEl.classList.remove('hidden');
+            } else {
+                liveTaskEl.classList.add('hidden');
+            }
+
+            drawPixelAvatar(document.getElementById('inspect-avatar'), agentKey);
+            document.getElementById('character-inspect-card').classList.remove('hidden');
+        };
+
+        window.closeInspectCard = function() {
+            document.getElementById('character-inspect-card').classList.add('hidden');
+        };
+
+        function onPointerClick(e) {
+            // Hindari klik jika sedang drag orbit
+            const rect = renderer.domElement.getBoundingClientRect();
+            mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+            const hits = raycaster.intersectObjects(clickableAgentMeshes, false);
+            if (hits.length > 0) {
+                const key = hits[0].object.userData.agentKey;
+                if (key) focusAgent(key);
+            }
+        }
+
+        function init() {
+            const container = document.getElementById('canvas-container');
+            scene = new THREE.Scene();
+
+            camera = new THREE.PerspectiveCamera(36, window.innerWidth / window.innerHeight, 0.5, 160);
+            camera.position.copy(CAMERA_PRESETS.iso.pos);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.target.copy(CAMERA_PRESETS.iso.target);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.07;
+            controls.minDistance = 5;
+            controls.maxDistance = 56;
+            controls.maxPolarAngle = Math.PI / 2 - 0.06;
+            controls.autoRotateSpeed = 0.9;
+
+            // Pencahayaan cerah & bersih bergaya kartun isometrik
+            const hemi = new THREE.HemisphereLight(0xffffff, 0xd4c7bc, 0.85);
+            scene.add(hemi);
+
+            const dirLight = new THREE.DirectionalLight(0xfff9f0, 0.88);
+            dirLight.position.set(18, 30, 20);
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 2048;
+            dirLight.shadow.mapSize.height = 2048;
+            dirLight.shadow.camera.near = 5;
+            dirLight.shadow.camera.far = 85;
+            const d = 22;
+            dirLight.shadow.camera.left = -d;
+            dirLight.shadow.camera.right = d;
+            dirLight.shadow.camera.top = d;
+            dirLight.shadow.camera.bottom = -d;
+            dirLight.shadow.bias = -0.0008;
+            scene.add(dirLight);
+
+            const fillLight = new THREE.DirectionalLight(0xdbeafe, 0.32);
+            fillLight.position.set(-18, 14, -14);
+            scene.add(fillLight);
+
+            buildOfficeEnvironment();
+
+            // Buat 4 karakter
+            ['ardy', 'sentod', 'jubaidah', 'bodat'].forEach(k => {
+                agents[k] = createCharacter(k);
+            });
+            assignModeTargets('work', true);
+
+            initAvatars();
+
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+            clock = new THREE.Clock();
+
+            // Bedakan klik cepat vs drag kamera
+            let downPos = { x: 0, y: 0 };
+            renderer.domElement.addEventListener('pointerdown', e => {
+                downPos = { x: e.clientX, y: e.clientY };
+                cameraAnim = null; // batalkan animasi kamera jika user mulai drag manual
+            });
+            renderer.domElement.addEventListener('pointerup', e => {
+                const dist = Math.hypot(e.clientX - downPos.x, e.clientY - downPos.y);
+                if (dist < 6) onPointerClick(e);
+            });
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        function lerpAngle(a, b, t) {
+            let diff = ((b - a + Math.PI) % (Math.PI * 2)) - Math.PI;
+            if (diff < -Math.PI) diff += Math.PI * 2;
+            return a + diff * t;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const dt = Math.min(clock.getDelta(), 0.05);
+            const elapsed = clock.getElapsedTime();
+
+            // Transisi kamera halus
+            if (cameraAnim) {
+                cameraAnim.progress = Math.min(1, cameraAnim.progress + dt * 2.1);
+                const ease = 1 - Math.pow(1 - cameraAnim.progress, 3);
+                camera.position.lerpVectors(cameraAnim.startPos, cameraAnim.endPos, ease);
+                controls.target.lerpVectors(cameraAnim.startTarget, cameraAnim.endTarget, ease);
+                if (cameraAnim.progress >= 1) cameraAnim = null;
+            }
+
+            // Animasi uap kopi
+            steamParticles.forEach(sp => {
+                const t = (elapsed * 0.65 + sp.phase) % 1;
+                sp.mesh.position.y = sp.baseY + t * 0.42;
+                sp.mesh.material.opacity = (1 - t) * 0.45;
+                sp.mesh.scale.setScalar(0.8 + t * 0.9);
+            });
+
+            // Animasi semua karakter (berjalan, duduk, gestur kerja/rapat/ngopi, dan kedipan mata)
+            Object.values(agents).forEach(ag => {
+                // Eye Blink periodik
+                if (elapsed >= ag.nextBlinkTime) {
+                    ag.blinkEndTime = elapsed + 0.14;
+                    ag.nextBlinkTime = elapsed + 2.4 + Math.random() * 3.2;
+                }
+                const eyeScaleY = elapsed < ag.blinkEndTime ? 0.12 : 1.0;
+                ag.leftEye.scale.y = eyeScaleY;
+                ag.rightEye.scale.y = eyeScaleY;
+
+                // Cek apakah masih berjalan menuju waypoint
+                if (ag.waypoints.length > 0) {
+                    const target = ag.waypoints[0];
+                    const toTarget = new THREE.Vector3().subVectors(target, ag.root.position);
+                    toTarget.y = 0;
+                    const dist = toTarget.length();
+                    const speed = 3.8;
+
+                    if (dist < 0.14) {
+                        ag.root.position.x = target.x;
+                        ag.root.position.z = target.z;
+                        ag.waypoints.shift();
+                        if (ag.waypoints.length === 0) {
+                            ag.isSitting = ag.targetSit;
+                        }
+                    } else {
+                        toTarget.normalize();
+                        ag.root.position.addScaledVector(toTarget, Math.min(dist, speed * dt));
+                        const moveYaw = Math.atan2(toTarget.x, toTarget.z);
+                        ag.root.rotation.y = lerpAngle(ag.root.rotation.y, moveYaw, 10 * dt);
+
+                        // Ayunan kaki & tangan saat berjalan
+                        const walkCycle = elapsed * 10 + ag.phase;
+                        ag.bodyGroup.position.y = Math.abs(Math.sin(walkCycle)) * 0.06;
+                        ag.leftLeg.rotation.x = Math.sin(walkCycle) * 0.55;
+                        ag.rightLeg.rotation.x = -Math.sin(walkCycle) * 0.55;
+                        ag.leftArm.rotation.x = -Math.sin(walkCycle) * 0.45;
+                        ag.rightArm.rotation.x = Math.sin(walkCycle) * 0.45;
+                    }
+                } else {
+                    // Sudah tiba di tujuan
+                    ag.root.rotation.y = lerpAngle(ag.root.rotation.y, ag.finalRotY, 7 * dt);
+
+                    if (ag.isSitting) {
+                        ag.bodyGroup.position.y += (-0.22 - ag.bodyGroup.position.y) * 8 * dt;
+                        ag.leftLeg.rotation.x += (-1.35 - ag.leftLeg.rotation.x) * 8 * dt;
+                        ag.rightLeg.rotation.x += (-1.35 - ag.rightLeg.rotation.x) * 8 * dt;
+                    } else {
+                        ag.bodyGroup.position.y += (Math.sin(elapsed * 2.2 + ag.phase) * 0.02 - ag.bodyGroup.position.y) * 8 * dt;
+                        ag.leftLeg.rotation.x *= 0.85;
+                        ag.rightLeg.rotation.x *= 0.85;
+                    }
+
+                    // Gestur tangan sesuai ruangan masing-masing agen
+                    const activeRoom = ag.currentRoom || (currentMode === 'work' ? (ag.key === 'ardy' ? 'boss' : 'workspace') : currentMode);
+                    if (activeRoom === 'boss' || activeRoom === 'workspace') {
+                        if (ag.key === 'ardy') {
+                            ag.leftArm.rotation.x = -0.65 + Math.sin(elapsed * 5) * 0.08;
+                            ag.rightArm.rotation.x = -0.65 + Math.cos(elapsed * 5) * 0.08;
+                        } else {
+                            ag.leftArm.rotation.x = -0.82 + Math.sin(elapsed * 14 + ag.phase) * 0.14;
+                            ag.rightArm.rotation.x = -0.82 + Math.cos(elapsed * 14 + ag.phase) * 0.14;
+                        }
+                    } else if (activeRoom === 'meeting') {
+                        ag.leftArm.rotation.x = -0.45 + Math.sin(elapsed * 3.5 + ag.phase) * 0.12;
+                        ag.rightArm.rotation.x = -0.55 - Math.sin(elapsed * 3.5 + ag.phase) * 0.12;
+                    } else {
+                        // Area ngopi santai
+                        ag.leftArm.rotation.x = -0.25 + Math.sin(elapsed * 2 + ag.phase) * 0.06;
+                        ag.rightArm.rotation.x = -0.35 + Math.cos(elapsed * 2 + ag.phase) * 0.08;
+                    }
+                }
+            });
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // =========================================================================
+        // 9. INTEGRASI LIVE POLLING GOOGLE ANTIGRAVITY REMOTE (office_state.json)
+        // =========================================================================
+        const STORAGE_KEY_URL = 'ardy_hq_cloud_url';
+        const STORAGE_KEY_INTERVAL = 'ardy_hq_cloud_interval';
+
+        let cloudPollingTimer = null;
+        let isCloudPollingActive = false;
+        let simTimer = null;
+        let isSimRunning = false;
+        let lastAppliedHash = '';
+
+        const SAMPLE_OFFICE_STATE = {
+            mode: "work",
+            updated_at: new Date().toISOString(),
+            approval_needed: true,
+            approval_message: "Video 9:16 + 3 variasi caption siap tayang! Menunggu ACC Bos Ardy.",
+            agents: {
+                ardy:     { status: "Cek Laporan",   room: "boss",      task: "Review paket konten harian" },
+                sentod:   { status: "Selesai Riset", room: "coffee",    task: "Ngopi santai setelah buat brief" },
+                jubaidah: { status: "Render 4K 85%", room: "workspace", task: "Render video vertikal + subtitle SRT" },
+                bodat:    { status: "Siap Upload",   room: "workspace", task: "Menunggu video final & ACC Bos Ardy" }
+            }
+        };
+
+        const PIPELINE_SIM_STEPS = [
+            {
+                toast: '☁️ Tahap 1: Sentod melakukan riset tren, Jubaidah & Bodat ngopi menunggu brief',
+                payload: {
+                    mode: 'work',
+                    approval_needed: false,
+                    agents: {
+                        ardy:     { status: 'Pantau Cloud',  room: 'boss',      task: 'Memantau trigger harian 08:00 WIB' },
+                        sentod:   { status: 'Riset Tren',    room: 'workspace', task: 'Analisis topik viral & buat brief JSON' },
+                        jubaidah: { status: 'Tunggu Brief',  room: 'coffee',    task: 'Ngopi sambil menunggu brief Sentod' },
+                        bodat:    { status: 'Standby Kopi',  room: 'coffee',    task: 'Menunggu bahan video & brief' }
+                    }
+                }
+            },
+            {
+                toast: '☁️ Tahap 2: Sentod selesai (ke Area Ngopi), Jubaidah mulai Edit Video 4K!',
+                payload: {
+                    mode: 'work',
+                    approval_needed: false,
+                    agents: {
+                        ardy:     { status: 'Pantau Render', room: 'boss',      task: 'Cek progres FFmpeg di cloud sandbox' },
+                        sentod:   { status: 'Brief Selesai', room: 'coffee',    task: 'Istirahat ngopi di sofa' },
+                        jubaidah: { status: 'Edit FFmpeg',   room: 'workspace', task: 'Potong 9:16 + tempel auto-subtitle' },
+                        bodat:    { status: 'Draft Caption', room: 'workspace', task: 'Menyusun hook & hashtag dari brief' }
+                    }
+                }
+            },
+            {
+                toast: '☁️ Tahap 3: Jubaidah selesai render, Bodat mengemas paket upload!',
+                payload: {
+                    mode: 'work',
+                    approval_needed: false,
+                    agents: {
+                        ardy:     { status: 'Siap Review',   room: 'boss',      task: 'Menunggu notifikasi paket siap tayang' },
+                        sentod:   { status: 'Santai Sofa',   room: 'coffee',    task: 'Memantau metrik tren berikutnya' },
+                        jubaidah: { status: 'QA Lulus ✓',    room: 'coffee',    task: 'Video lolos cek ffprobe, istirahat ngopi' },
+                        bodat:    { status: 'Paket Upload',  room: 'workspace', task: 'Bundel video + 3 variasi caption ke Drive' }
+                    }
+                }
+            },
+            {
+                toast: '🔔 Tahap 4: Semua AI selesai & ngopi — Menunggu ACC Bos Ardy!',
+                payload: {
+                    mode: 'coffee',
+                    approval_needed: true,
+                    approval_message: 'Semua tahap otomatis selesai! Video 9:16 + caption sudah di 03_ready_to_post/. Ketik ACC untuk publikasi.',
+                    agents: {
+                        ardy:     { status: 'Perlu ACC 🔔',  room: 'boss',      task: 'Meninjau hasil akhir untuk ACC publikasi' },
+                        sentod:   { status: 'Ngopi Santai',  room: 'coffee',    task: 'Standby perintah berikutnya' },
+                        jubaidah: { status: 'Ngopi Latte',   room: 'coffee',    task: 'Standby jika ada revisi video' },
+                        bodat:    { status: 'Tunggu ACC',    room: 'coffee',    task: 'Siap upload begitu Bos Ardy ACC' }
+                    }
+                }
+            }
+        ];
+
+        const DEFAULT_RAW_STATE_URL = 'https://raw.githubusercontent.com/atonggembul-hub/ardy-ai-agency/main/office_state.json';
+
+        function resolveDefaultCloudUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const paramUrl = (params.get('state_url') || '').trim();
+            if (paramUrl) return paramUrl;
+
+            const savedUrl = (localStorage.getItem(STORAGE_KEY_URL) || '').trim();
+            if (savedUrl) return savedUrl;
+
+            if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+                return new URL('./office_state.json', window.location.href).href;
+            }
+            return DEFAULT_RAW_STATE_URL;
+        }
+
+        async function autoStartLiveSync(intervalMs) {
+            const ok = await fetchCloudState(false);
+            if (!ok) {
+                setCloudIndicator('idle', 'Manual');
+                return;
+            }
+            isCloudPollingActive = true;
+            cloudPollingTimer = setInterval(() => fetchCloudState(false), intervalMs);
+            const btn = document.getElementById('btn-toggle-polling');
+            if (btn) {
+                btn.textContent = 'Hentikan Live Sync';
+                btn.classList.remove('bg-teal-600', 'hover:bg-teal-700');
+                btn.classList.add('bg-rose-600', 'hover:bg-rose-700');
+            }
+        }
+
+        function initCloudSync() {
+            const resolvedUrl = resolveDefaultCloudUrl();
+            const savedInterval = localStorage.getItem(STORAGE_KEY_INTERVAL) || '5000';
+            const urlInput = document.getElementById('cloud-url-input');
+            const intervalSelect = document.getElementById('cloud-interval-select');
+            const manualInput = document.getElementById('manual-json-input');
+
+            if (urlInput) urlInput.value = resolvedUrl;
+            if (intervalSelect) intervalSelect.value = savedInterval;
+            if (manualInput) manualInput.value = JSON.stringify(SAMPLE_OFFICE_STATE, null, 2);
+
+            const params = new URLSearchParams(window.location.search);
+            const disableAutoSync = params.get('autosync') === '0';
+            const isHostedHttp = window.location.protocol === 'http:' || window.location.protocol === 'https:';
+            if (!disableAutoSync && resolvedUrl && (isHostedHttp || params.get('autosync') === '1')) {
+                const intervalMs = parseInt(savedInterval, 10) || 5000;
+                autoStartLiveSync(intervalMs);
+            }
+        }
+
+        function setCloudIndicator(state, text) {
+            const dot = document.getElementById('cloud-dot');
+            const label = document.getElementById('cloud-status-text');
+            if (!dot || !label) return;
+
+            dot.className = 'w-2 h-2 rounded-full';
+            if (state === 'connected') {
+                dot.classList.add('bg-emerald-500', 'pulse-teal');
+                label.className = 'text-[10px] font-semibold text-emerald-700';
+            } else if (state === 'sim') {
+                dot.classList.add('bg-amber-500', 'pulse-teal');
+                label.className = 'text-[10px] font-semibold text-amber-700';
+            } else if (state === 'error') {
+                dot.classList.add('bg-rose-500');
+                label.className = 'text-[10px] font-semibold text-rose-600';
+            } else {
+                dot.classList.add('bg-slate-400');
+                label.className = 'text-[10px] font-semibold text-slate-500';
+            }
+            label.textContent = text;
+        }
+
+        function showModalFeedback(type, message) {
+            const box = document.getElementById('cloud-feedback-box');
+            if (!box) return;
+            box.className = 'text-[11px] px-3 py-2 rounded-xl border';
+            if (type === 'success') {
+                box.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-800');
+            } else if (type === 'error') {
+                box.classList.add('bg-rose-50', 'border-rose-200', 'text-rose-800');
+            } else {
+                box.classList.add('bg-sky-50', 'border-sky-200', 'text-sky-800');
+            }
+            box.textContent = message;
+            box.classList.remove('hidden');
+        }
+
+        function applyOfficeStateJson(data, sourceLabel = 'Cloud') {
+            if (!data || typeof data !== 'object') {
+                throw new Error('Format JSON tidak valid.');
+            }
+
+            const payloadHash = JSON.stringify(data);
+            const isChanged = payloadHash !== lastAppliedHash;
+            lastAppliedHash = payloadHash;
+
+            const mode = data.mode || 'work';
+            currentMode = mode;
+            const badge = document.getElementById('current-mode-badge');
+            if (badge) {
+                if (mode === 'work') badge.textContent = 'Cloud: Kerja';
+                else if (mode === 'meeting') badge.textContent = 'Cloud: Meeting';
+                else if (mode === 'coffee') badge.textContent = 'Cloud: Ngopi';
+                else badge.textContent = `Cloud: ${mode}`;
+            }
+
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('bg-teal-600', 'text-white', 'shadow-sm');
+                btn.classList.add('bg-slate-100', 'text-slate-600', 'border', 'border-slate-200');
+            });
+            const activeBtn = document.getElementById(`btn-mode-${mode}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-slate-100', 'text-slate-600', 'border', 'border-slate-200');
+                activeBtn.classList.add('bg-teal-600', 'text-white', 'shadow-sm');
+            }
+
+            const agentsData = data.agents || {};
+            ['ardy', 'sentod', 'jubaidah', 'bodat'].forEach(key => {
+                const agState = agentsData[key] || {};
+                const fallbackRoom = mode === 'work' ? (key === 'ardy' ? 'boss' : 'workspace') : mode;
+                const targetRoom = agState.room || fallbackRoom;
+
+                moveAgentToRoom(key, targetRoom, false);
+
+                if (agents[key]) {
+                    agents[key].liveStatus = agState.status || '';
+                    agents[key].liveTask = agState.task || '';
+                }
+
+                const statusEl = document.getElementById(`status-${key}`);
+                if (statusEl && agState.status) {
+                    statusEl.textContent = agState.status;
+                }
+            });
+
+            const banner = document.getElementById('approval-banner');
+            const msgEl = document.getElementById('approval-message');
+            if (data.approval_needed) {
+                if (msgEl) {
+                    msgEl.textContent = data.approval_message || 'Paket konten siap tayang dan menunggu ACC Bos Ardy.';
+                }
+                if (banner) banner.classList.remove('hidden');
+            } else {
+                if (banner) banner.classList.add('hidden');
+            }
+
+            const nowStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const syncLabel = document.getElementById('cloud-last-sync');
+            if (syncLabel) {
+                syncLabel.textContent = `${sourceLabel} sinkron • ${nowStr}`;
+            }
+
+            if (isChanged && sourceLabel === 'Cloud') {
+                showToast('☁️ Status baru diterima dari Google Antigravity!');
+            }
+        }
+
+        async function fetchCloudState(showToastOnResult = false) {
+            const urlInput = document.getElementById('cloud-url-input');
+            const rawUrl = urlInput ? urlInput.value.trim() : '';
+            if (!rawUrl) {
+                showModalFeedback('error', 'Masukkan URL office_state.json terlebih dahulu.');
+                return false;
+            }
+
+            try {
+                const sep = rawUrl.includes('?') ? '&' : '?';
+                const fetchUrl = `${rawUrl}${sep}_t=${Date.now()}`;
+                const res = await fetch(fetchUrl, { cache: 'no-store' });
+                if (!res.ok) throw new Error(`HTTP ${res.status} (${res.statusText})`);
+
+                const json = await res.json();
+                applyOfficeStateJson(json, 'Cloud');
+                setCloudIndicator('connected', 'Live Cloud');
+                showModalFeedback('success', `Berhasil tersinkronisasi (${new Date().toLocaleTimeString('id-ID')}).`);
+                if (showToastOnResult) showToast('✅ Berhasil sinkron dengan office_state.json');
+                return true;
+            } catch (err) {
+                setCloudIndicator('error', 'Gagal Sync');
+                showModalFeedback('error', `Gagal membaca JSON: ${err.message}. Pastikan URL publik & mendukung CORS.`);
+                if (showToastOnResult) showToast('⚠️ Gagal mengambil office_state.json');
+                return false;
+            }
+        }
+
+        window.toggleCloudPolling = async function() {
+            const btn = document.getElementById('btn-toggle-polling');
+            const urlInput = document.getElementById('cloud-url-input');
+            const intervalSelect = document.getElementById('cloud-interval-select');
+
+            if (isCloudPollingActive) {
+                clearInterval(cloudPollingTimer);
+                cloudPollingTimer = null;
+                isCloudPollingActive = false;
+                if (btn) {
+                    btn.textContent = 'Aktifkan Live Sync';
+                    btn.classList.remove('bg-rose-600', 'hover:bg-rose-700');
+                    btn.classList.add('bg-teal-600', 'hover:bg-teal-700');
+                }
+                setCloudIndicator('idle', 'Manual');
+                showModalFeedback('info', 'Live polling dihentikan. Anda dapat mengontrol ruangan secara manual.');
+                showToast('⏹️ Live Sync Cloud dimatikan');
+                return;
+            }
+
+            const url = urlInput ? urlInput.value.trim() : '';
+            if (!url) {
+                showModalFeedback('error', 'Silakan isi URL endpoint office_state.json terlebih dahulu.');
+                return;
+            }
+
+            if (isSimRunning) stopPipelineSimulation();
+
+            const intervalMs = parseInt(intervalSelect ? intervalSelect.value : '5000', 10) || 5000;
+            localStorage.setItem(STORAGE_KEY_URL, url);
+            localStorage.setItem(STORAGE_KEY_INTERVAL, String(intervalMs));
+
+            const ok = await fetchCloudState(true);
+            if (!ok) return;
+
+            isCloudPollingActive = true;
+            cloudPollingTimer = setInterval(() => fetchCloudState(false), intervalMs);
+            if (btn) {
+                btn.textContent = 'Hentikan Live Sync';
+                btn.classList.remove('bg-teal-600', 'hover:bg-teal-700');
+                btn.classList.add('bg-rose-600', 'hover:bg-rose-700');
+            }
+            closeCloudSyncModal();
+        };
+
+        window.manualFetchCloudState = function() {
+            fetchCloudState(true);
+        };
+
+        window.openCloudSyncModal = function() {
+            document.getElementById('cloud-sync-modal').classList.remove('hidden');
+        };
+
+        window.closeCloudSyncModal = function() {
+            document.getElementById('cloud-sync-modal').classList.add('hidden');
+        };
+
+        window.applyManualJson = function() {
+            const raw = document.getElementById('manual-json-input').value;
+            try {
+                const parsed = JSON.parse(raw);
+                if (isSimRunning) stopPipelineSimulation();
+                applyOfficeStateJson(parsed, 'Manual JSON');
+                setCloudIndicator('connected', 'JSON Aktif');
+                showModalFeedback('success', 'Payload JSON berhasil diterapkan! Lihat karakter bergerak di kantor 3D.');
+                showToast('⚡ Payload office_state.json diterapkan ke Kantor 3D');
+                closeCloudSyncModal();
+            } catch (err) {
+                showModalFeedback('error', `Kesalahan sintaks JSON: ${err.message}`);
+            }
+        };
+
+        function copyTextSafe(text, successMsg) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                showToast(successMsg);
+            } catch (e) {
+                showToast('Gagal menyalin otomatis, silakan salin manual.');
+            }
+            document.body.removeChild(ta);
+        }
+
+        window.copySampleJson = function() {
+            const txt = document.getElementById('manual-json-input').value;
+            copyTextSafe(txt, '📋 Contoh office_state.json disalin!');
+        };
+
+        window.copyAccCommand = function() {
+            const cmd = 'ACC Bos Ardy! Bodat, silakan jalankan upload/penjadwalan untuk paket konten di 03_ready_to_post/ sesuai jadwal terbaik hari ini, lalu seluruh tim boleh istirahat ke mode Ngopi.';
+            copyTextSafe(cmd, '📋 Perintah ACC Bos Ardy disalin! Tempel di Antigravity.');
+        };
+
+        window.dismissApprovalBanner = function() {
+            document.getElementById('approval-banner').classList.add('hidden');
+        };
+
+        function stopPipelineSimulation() {
+            clearInterval(simTimer);
+            simTimer = null;
+            isSimRunning = false;
+            const btn = document.getElementById('btn-sim-pipeline');
+            if (btn) btn.innerHTML = '<span>▶️</span><span>Simulasi</span>';
+            if (!isCloudPollingActive) setCloudIndicator('idle', 'Manual');
+        }
+
+        window.togglePipelineSimulation = function() {
+            if (isSimRunning) {
+                stopPipelineSimulation();
+                showToast('⏹️ Simulasi pipeline dihentikan');
+                return;
+            }
+
+            if (isCloudPollingActive) window.toggleCloudPolling();
+
+            isSimRunning = true;
+            const btn = document.getElementById('btn-sim-pipeline');
+            if (btn) btn.innerHTML = '<span>⏹️</span><span>Stop Sim</span>';
+            setCloudIndicator('sim', 'Simulasi AI');
+
+            let stepIndex = 0;
+            const runStep = () => {
+                const step = PIPELINE_SIM_STEPS[stepIndex];
+                applyOfficeStateJson(step.payload, 'Simulasi');
+                showToast(step.toast);
+                stepIndex = (stepIndex + 1) % PIPELINE_SIM_STEPS.length;
+            };
+
+            moveCameraTo('iso');
+            runStep();
+            simTimer = setInterval(runStep, 7000);
+        };
+
+        window.onload = function() {
+            init();
+            initCloudSync();
+            animate();
+        };
+    </script>
+</body>
+</html>
