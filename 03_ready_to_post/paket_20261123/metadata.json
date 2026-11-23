@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-23",
+  "title": "Lagi Meeting APBN, Tiba-Tiba Ditelepon & Diganti? Begini Sisi Gelap Politik Indonesia",
+  "niche": "Analisis Bisnis, Ekonomi & Isu Politik Terkini",
+  "source_channel": "https://www.youtube.com/@RaymondChins",
+  "source_video": "https://www.youtube.com/watch?v=r1MUHIUkYxs",
+  "segments": [
+    "00:00:27-00:01:00",
+    "00:01:14-00:01:39"
+  ],
+  "brief_file": "01_briefs/brief_20261123.md",
+  "video_file": "02_edited_videos/video_20261123.mp4",
+  "subtitle_file": "02_edited_videos/video_20261123.srt",
+  "qa_file": "02_edited_videos/video_20261123_qa.json",
+  "drive_file_id": "1ZzJZu1Jv0yy-53lKA333GGiYmf1EEUil",
+  "drive_link": "https://drive.google.com/file/d/1ZzJZu1Jv0yy-53lKA333GGiYmf1EEUil/view?usp=drivesdk",
+  "resolution": "1080x1920",
+  "fps": 30,
+  "duration_sec": 58.01,
+  "qa_passed": true,
+  "render_note": "Kinetic typography edit (editvidio style) rendered via Remotion. YouTube raw video stream blocked by anti-bot check on cloud VM; upload raw MP4 to 00_raw_assets/ if talking-head background compositing is needed.",
+  "approval_status": "PENDING_BOS_ARDY"
+}

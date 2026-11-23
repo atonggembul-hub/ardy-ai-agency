@@ -1,13 +1,13 @@
 {
-  "mode": "work",
-  "updated_at": "2026-11-24T00:18:12+07:00",
-  "approval_needed": false,
-  "approval_message": "Kantor AI Agent 3D Ardy HQ aktif dan siap menerima perintah produksi konten harian.",
+  "mode": "coffee",
+  "updated_at": "2026-11-24T00:19:14+07:00",
+  "approval_needed": true,
+  "approval_message": "Paket konten 20261123 (@RaymondChins 58s 9:16 + 3 caption + Drive link) siap! Menunggu ACC Bos Ardy.",
   "agents": {
     "ardy": {
-      "status": "Pantau Cloud",
+      "status": "Perlu ACC 🔔",
       "room": "boss",
-      "task": "Memantau estafet Sentod -> Jubaidah -> Bodat"
+      "task": "Meninjau paket siap tayang untuk ACC publikasi"
     },
     "sentod": {
       "status": "Selesai Riset",
@@ -20,9 +20,9 @@
       "task": "Video 9:16 1080x1920 30fps lulus QA ffprobe, handoff ke Bodat"
     },
     "bodat": {
-      "status": "Upload & Caption",
-      "room": "workspace",
-      "task": "Mengunggah ke Google Drive, menulis 3 caption & kirim WA Fonnte"
+      "status": "Tunggu ACC",
+      "room": "coffee",
+      "task": "Paket di Drive & WA terkirim; menunggu ACC Bos Ardy"
     }
   }
 }
