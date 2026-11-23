@@ -1,0 +1,19 @@
+# Python & OS
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+
+# File media mentah/render berukuran sangat besar (simpan di Google Drive, catat link di metadata.json)
+*.mov
+*.mkv
+*.avi
+00_raw_assets/*.mp4
+02_edited_videos/*.mp4
+03_ready_to_post/**/*.mp4
+!00_raw_assets/.gitkeep
+!01_briefs/.gitkeep
+!02_edited_videos/.gitkeep
+!03_ready_to_post/.gitkeep
