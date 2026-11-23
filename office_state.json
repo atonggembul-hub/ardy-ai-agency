@@ -1,28 +1,28 @@
 {
   "mode": "work",
-  "updated_at": "2026-11-23T22:23:11+07:00",
+  "updated_at": "2026-11-24T00:07:42+07:00",
   "approval_needed": false,
   "approval_message": "Kantor AI Agent 3D Ardy HQ aktif dan siap menerima perintah produksi konten harian.",
   "agents": {
     "ardy": {
-      "status": "Mengawasi",
+      "status": "Pantau Cloud",
       "room": "boss",
-      "task": "Kantor AI Agent HQ aktif & terhubung ke GitHub Cloud"
+      "task": "Memantau estafet Sentod -> Jubaidah -> Bodat"
     },
     "sentod": {
-      "status": "Siap Riset",
+      "status": "Riset Tren",
       "room": "workspace",
-      "task": "Menunggu perintah niche / jadwal harian untuk riset tren"
+      "task": "Menganalisis video viral @berkelaspodcast, @radityadika, @RaymondChins"
     },
     "jubaidah": {
-      "status": "Siap Edit 9:16",
-      "room": "workspace",
-      "task": "FFmpeg & ffprobe siap mengolah video vertikal 1080x1920"
+      "status": "Menunggu Brief",
+      "room": "coffee",
+      "task": "Menunggu brief & timestamp dari Sentod"
     },
     "bodat": {
-      "status": "Siap Caption",
-      "room": "workspace",
-      "task": "Siap menyusun 3 variasi caption & bundel paket tayang"
+      "status": "Menunggu Video",
+      "room": "coffee",
+      "task": "Menunggu hasil edit video dari Jubaidah"
     }
   }
 }
