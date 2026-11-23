@@ -1,6 +1,6 @@
 {
   "mode": "work",
-  "updated_at": "2026-11-24T02:05:00+07:00",
+  "updated_at": "2026-11-24T02:16:07+07:00",
   "approval_needed": false,
   "approval_message": "Paket konten 20261123 (@RaymondChins 58s 9:16 + 3 caption + Drive link) siap! Menunggu ACC Bos Ardy.",
   "agents": {
@@ -15,9 +15,9 @@
       "task": "Link share.gemini.google butuh login; menunggu Bos Ardy paste teks/link YouTube"
     },
     "jubaidah": {
-      "status": "Ngopi Latte",
-      "room": "coffee",
-      "task": "Standby jika ada revisi video"
+      "status": "Cek Koneksi YT",
+      "room": "workspace",
+      "task": "Menguji konektivitas yt-dlp ke YouTube"
     },
     "bodat": {
       "status": "Santai Bistro",
