@@ -1,0 +1,14 @@
+{
+  "date": "2026-11-23",
+  "approved_by": "Bos Ardy",
+  "approved_at": "2026-11-24T00:22:57+07:00",
+  "status": "APPROVED_AND_PUBLISHED",
+  "package_dir": "03_ready_to_post/paket_20261123",
+  "deliverables": {
+    "google_drive_file_id": "1ZzJZu1Jv0yy-53lKA333GGiYmf1EEUil",
+    "google_drive_url": "https://drive.google.com/file/d/1ZzJZu1Jv0yy-53lKA333GGiYmf1EEUil/view?usp=drivesdk",
+    "whatsapp_fonnte_target": "6285275328788",
+    "whatsapp_fonnte_message_id": 195078756,
+    "captions_file": "03_ready_to_post/paket_20261123/captions.md"
+  }
+}
