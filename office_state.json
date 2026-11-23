@@ -1,6 +1,6 @@
 {
   "mode": "work",
-  "updated_at": "2026-11-24T00:09:57+07:00",
+  "updated_at": "2026-11-24T00:18:12+07:00",
   "approval_needed": false,
   "approval_message": "Kantor AI Agent 3D Ardy HQ aktif dan siap menerima perintah produksi konten harian.",
   "agents": {
@@ -15,14 +15,14 @@
       "task": "Brief 01_briefs/brief_20261123.md selesai, handoff ke Jubaidah"
     },
     "jubaidah": {
-      "status": "Edit Remotion",
-      "room": "workspace",
-      "task": "Memotong klip & mengedit 9:16 kinetic typography (skill editvidio)"
+      "status": "QA Lulus",
+      "room": "coffee",
+      "task": "Video 9:16 1080x1920 30fps lulus QA ffprobe, handoff ke Bodat"
     },
     "bodat": {
-      "status": "Menunggu Video",
-      "room": "coffee",
-      "task": "Menunggu hasil edit video dari Jubaidah"
+      "status": "Upload & Caption",
+      "room": "workspace",
+      "task": "Mengunggah ke Google Drive, menulis 3 caption & kirim WA Fonnte"
     }
   }
 }
