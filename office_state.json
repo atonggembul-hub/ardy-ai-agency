@@ -1,28 +1,28 @@
 {
   "mode": "coffee",
-  "updated_at": "2026-11-24T00:19:14+07:00",
-  "approval_needed": true,
+  "updated_at": "2026-11-24T00:23:30+07:00",
+  "approval_needed": false,
   "approval_message": "Paket konten 20261123 (@RaymondChins 58s 9:16 + 3 caption + Drive link) siap! Menunggu ACC Bos Ardy.",
   "agents": {
     "ardy": {
-      "status": "Perlu ACC 🔔",
+      "status": "Pantau Santai",
       "room": "boss",
-      "task": "Meninjau paket siap tayang untuk ACC publikasi"
+      "task": "Semua target hari ini selesai"
     },
     "sentod": {
-      "status": "Selesai Riset",
+      "status": "Ngopi Santai",
       "room": "coffee",
-      "task": "Brief 01_briefs/brief_20261123.md selesai, handoff ke Jubaidah"
+      "task": "Standby riset konten berikutnya"
     },
     "jubaidah": {
-      "status": "QA Lulus",
+      "status": "Ngopi Latte",
       "room": "coffee",
-      "task": "Video 9:16 1080x1920 30fps lulus QA ffprobe, handoff ke Bodat"
+      "task": "Standby jika ada revisi video"
     },
     "bodat": {
-      "status": "Tunggu ACC",
+      "status": "Santai Bistro",
       "room": "coffee",
-      "task": "Paket di Drive & WA terkirim; menunggu ACC Bos Ardy"
+      "task": "Publikasi selesai, istirahat ngopi"
     }
   }
 }
