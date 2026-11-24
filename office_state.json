@@ -1,36 +1,28 @@
 {
   "mode": "coffee",
-  "updated_at": "2026-11-24T14:56:23+07:00",
-  "approval_needed": true,
+  "updated_at": "2026-11-24T15:00:24+07:00",
+  "approval_needed": false,
   "approval_message": "Paket 20261124 (Samuel Christ 9:16 + 3 caption SEO) siap di 03_ready_to_post/paket_20261124/. Menunggu ACC Bos Ardy!",
   "agents": {
     "ardy": {
-      "status": "Perlu ACC 🔔",
+      "status": "Pantau Santai",
       "room": "boss",
-      "task": "Meninjau paket_20261124 untuk ACC publikasi",
-      "bubble": "Sentod sudah dapat 3 ide tren YouTube hari ini! 🔥📋",
-      "bubble_id": "rep_1795505508680"
+      "task": "Semua target hari ini selesai"
     },
     "sentod": {
-      "status": "Selesai Riset✅",
+      "status": "Ngopi Santai",
       "room": "coffee",
-      "task": "Riset 3 channel YT selesai di 01_briefs/brief_20261124_youtube_3ch.md",
-      "bubble": "Riset 3 channel YT selesai! Siap dioper ke Jubaidah! 🔎✅",
-      "bubble_id": "b_sen_done_20261124"
+      "task": "Standby riset konten berikutnya"
     },
     "jubaidah": {
-      "status": "QA Lulus ✅",
+      "status": "Ngopi Latte",
       "room": "coffee",
-      "task": "video_20261124.mp4 lulus QA ffprobe (draft 9:16), siap ke Bodat",
-      "bubble": "Render 9:16 & QA ffprobe lulus Bos! Siap ke Bodat! 🎬✅",
-      "bubble_id": "b_jub_meet_1"
+      "task": "Standby jika ada revisi video"
     },
     "bodat": {
-      "status": "Tunggu ACC 🔔",
+      "status": "Santai Bistro",
       "room": "coffee",
-      "task": "Paket 20261124 siap di 03_ready_to_post/, menunggu ACC Bos Ardy",
-      "bubble": "Paket 20261124 siap! Menunggu ACC Bos Ardy! 🚀🔔",
-      "bubble_id": "b_bod_meet_1"
+      "task": "Publikasi selesai, istirahat ngopi"
     }
   },
   "chats": {
