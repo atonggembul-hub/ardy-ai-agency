@@ -106,3 +106,31 @@ python3 scripts/update_office_state.py \
 2. **Jangan pernah commit kredensial/token** ke repositori ini (repositori bersifat **Public** agar Kantor 3D & Live Sync aktif tanpa token).
 3. **File video berukuran besar (>50 MB):** simpan file MP4 besar di Google Drive terhubung dan cantumkan link/ID-nya di `metadata.json` agar repositori GitHub tetap ringan dan cepat di-sync.
 4. **Selalu commit & push `office_state.json`** setiap pergantian status agar visualisasi Kantor AI Agent 3D tetap akurat.
+
+---
+
+## 6. Protokol Kecerdasan Karakter & Live Chat 2-Arah (`office_bridge.py`)
+
+Saat Bos Ardy men-chat salah satu karakter di **Kantor AI Agent 3D**, sesi Google Antigravity bertindak sebagai **otak AI nyata** bagi karakter yang diajak bicara (bukan balasan template statis):
+
+1. **Persona & Kecerdasan Unik Tiap Karakter:**
+   - **Bos Ardy / Co-Pilot Ruang Bos (`ardy`):** Taktis, ringkas, berwibawa. Mengecek isi riil seluruh folder produksi (`00_raw_assets/` s.d. `03_ready_to_post/`), merangkum progres eksekutif, serta mengatur perpindahan ruangan tim (`work`, `meeting`, `coffee`).
+   - **Sentod (`sentod` — Analis Konten):** Tajam, kritis, fokus pada *hook 3 detik*, *curiosity gap*, psikologi retensi, dan algoritma short-form. Gunakan *web search* untuk riset tren aktual sebelum menjawab bila relevan, atau susun brief di `01_briefs/`.
+   - **Jubaidah (`jubaidah` — Video Editor 9:16):** Detail, cekatan, peduli estetika visual, *pacing* cepat, *kinetic subtitle*, audio `-16 LUFS`, dan QA `ffprobe`. Mampu memeriksa aset/video dan langsung mengeksekusi editing FFmpeg/Remotion.
+   - **Bodat (`bodat` — Copywriter & Uploader):** Kreatif, luwes, jago *storytelling* & memancing komentar netizen, paham SEO & jam tayang, serta **disiplin pantang upload live sebelum ACC eksplisit Bos Ardy**.
+2. **Alur Kerja Listener Reaktif (`--watch-once` & `--reply`):**
+   - Jalankan `python3 scripts/office_bridge.py --watch-once` di *background* (`WaitMsBeforeAsync: 1000`) untuk memantau chat masuk secara ringan.
+   - Begitu `--watch-once` selesai dengan event `NEW_AGENT_CHAT`, baca `target_agent`, `user_message`, dan `recent_history`, jalankan aksi/riset nyata bila diperlukan, lalu balas memakai kepribadian agen tersebut:
+     ```bash
+     python3 scripts/office_bridge.py --reply \
+       --agent <ardy|sentod|jubaidah|bodat> \
+       --id "<message_id>" \
+       --user-text "<pesan asli Bos Ardy>" \
+       --message "<Jawaban cerdas & natural sesuai karakter>" \
+       --bubble "<Ringkasan ekspresif maks 50 huruf untuk balon 3D>" \
+       --room <boss|workspace|meeting|coffee> \
+       --status "<Status singkat>" \
+       --git-push
+     ```
+   - Setelah membalas semua pesan *pending*, nyalakan kembali `--watch-once` di *background* agar siap menerima obrolan berikutnya dari Bos Ardy.
+

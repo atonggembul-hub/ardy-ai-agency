@@ -236,10 +236,16 @@
                             <h3 id="inspect-name" class="font-display font-bold text-sm text-white truncate">Sentod</h3>
                             <span id="inspect-status-pill" class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-teal-500/30 text-teal-100 border border-teal-400/30 truncate">Riset Tren</span>
                         </div>
-                        <p id="inspect-role" class="text-[10px] text-slate-300 truncate">Analis Konten</p>
+                        <div class="flex items-center gap-1.5">
+                            <p id="inspect-role" class="text-[10px] text-slate-300 truncate">Analis Konten</p>
+                            <span id="inspect-ai-badge" class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/25 text-emerald-200 border border-emerald-400/30 shrink-0">🧠 AI Brain</span>
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
+                    <button onclick="clearCurrentAgentChat()" class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs flex items-center justify-center transition" title="Bersihkan riwayat chat agen ini">
+                        🗑️
+                    </button>
                     <button id="btn-toggle-bio" onclick="toggleInspectBio()" class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs flex items-center justify-center transition" title="Detail karakter & tugas live">
                         ℹ️
                     </button>
@@ -256,7 +262,7 @@
             </div>
 
             <!-- Riwayat Chat Agen -->
-            <div id="agent-chat-messages" onwheel="event.stopPropagation()" ontouchmove="event.stopPropagation()" class="chat-scroll chat-selectable px-3 py-2.5 h-[200px] sm:h-[225px] overflow-y-auto space-y-2 bg-slate-50/85">
+            <div id="agent-chat-messages" onwheel="event.stopPropagation()" ontouchmove="event.stopPropagation()" class="chat-scroll chat-selectable px-3 py-2.5 h-[220px] sm:h-[250px] overflow-y-auto space-y-2 bg-slate-50/85">
             </div>
 
             <!-- Tombol Perintah Cepat per Agen -->
@@ -265,7 +271,7 @@
 
             <!-- Form Input Chat -->
             <form onsubmit="handleAgentChatSubmit(event)" class="p-2 bg-white border-t border-slate-200/80 flex items-center gap-1.5">
-                <input id="agent-chat-input" type="text" autocomplete="off" placeholder="Ketik perintah untuk agen..."
+                <input id="agent-chat-input" type="text" autocomplete="off" placeholder="Ajukan pertanyaan / perintah ke AI..."
                     class="flex-1 min-w-0 px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition">
                 <button type="submit" class="bg-teal-600 hover:bg-teal-700 active:scale-95 text-white text-xs font-bold px-3 py-2 rounded-xl transition shadow-sm shrink-0 flex items-center gap-1" title="Kirim pesan">
                     <span>Kirim</span>
@@ -302,7 +308,7 @@
             <div class="px-5 py-4 bg-gradient-to-r from-slate-900 to-teal-900 text-white flex items-center justify-between">
                 <div>
                     <h2 class="font-display font-bold text-base">☁️ Live Cloud Sync — Antigravity</h2>
-                    <p class="text-[11px] text-teal-200">Sinkronisasi real-time dari Apps Script / office_state.json</p>
+                    <p class="text-[11px] text-teal-200">Sinkronisasi real-time & Chat AI Agent 2-Arah</p>
                 </div>
                 <button onclick="closeCloudModal()" class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-bold">✕</button>
             </div>
@@ -311,14 +317,14 @@
                 <!-- Panel Khusus Jika Berjalan di Google Apps Script -->
                 <div id="gas-live-section" class="hidden rounded-2xl bg-emerald-50 border border-emerald-200 p-3.5 space-y-2.5">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-extrabold text-emerald-900">✅ Google Apps Script Terdeteksi!</span>
-                        <span id="gas-last-sync" class="text-[10px] font-semibold text-emerald-700">Auto-Sync 5 dtk</span>
+                        <span class="text-xs font-extrabold text-emerald-900">✅ Otak AI Antigravity Terhubung!</span>
+                        <span id="gas-last-sync" class="text-[10px] font-semibold text-emerald-700">Auto-Sync Live</span>
                     </div>
                     <p class="text-[11px] text-emerald-800 leading-relaxed">
-                        Kantor 3D tersambung langsung ke <code class="bg-white px-1 rounded">Code.gs</code> tanpa perlu menempel URL.
+                        Klik karakter mana saja untuk mengobrol langsung — setiap karakter memiliki kecerdasan AI & spesialisasi tersendiri dari sesi Google Antigravity Anda.
                     </p>
                     <div class="flex gap-1.5">
-                        <input id="gas-boss-cmd-input" type="text" placeholder="Kirim perintah cepat ke Antigravity via Code.gs..."
+                        <input id="gas-boss-cmd-input" type="text" placeholder="Kirim broadcast komando ke Ruang Bos..."
                             class="flex-1 text-xs px-3 py-2 rounded-xl border border-emerald-300 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
                         <button onclick="submitGasBossCommand()" class="text-xs font-bold px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shrink-0">
                             Kirim
@@ -328,13 +334,15 @@
 
                 <!-- Panel Sync URL JSON (GitHub Raw / GAS ?api=state / Firebase) -->
                 <div class="space-y-2">
-                    <label class="block text-xs font-bold text-slate-700">URL Endpoint <code class="text-teal-700">office_state.json</code></label>
-                    <input id="cloud-url-input" type="url" placeholder="https://script.google.com/.../exec?api=state"
+                    <label class="block text-xs font-bold text-slate-700">URL Endpoint <code class="text-teal-700">GAS /exec?api=state</code> atau <code class="text-teal-700">office_state.json</code></label>
+                    <input id="cloud-url-input" type="url" placeholder="https://script.google.com/macros/s/.../exec?api=state"
                         class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    <input id="cloud-token-input" type="password" placeholder="Opsional: GAS SECRET_TOKEN (agar bisa Chat AI dari GitHub Pages)"
+                        class="w-full text-xs px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
                     <div class="flex items-center gap-2">
                         <label class="text-xs text-slate-600 font-medium">Interval:</label>
                         <select id="cloud-interval-select" class="text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white font-semibold text-slate-700">
-                            <option value="3000">3 detik</option>
+                            <option value="2500">2.5 detik</option>
                             <option value="5000" selected>5 detik</option>
                             <option value="10000">10 detik</option>
                             <option value="30000">30 detik</option>
@@ -1816,41 +1824,77 @@
 
         const AGENT_CHAT_CONFIG = {
             ardy: {
-                placeholder: 'Tulis instruksi komando / broadcast ke tim...',
-                greeting: 'Halo Bos Ardy! Ini panel komando Ruang Bos. Ketik instruksi global (misal: "kumpulkan meeting", "semua kerja", "semua ngopi", atau "cek laporan tim").',
-                chips: ['Cek laporan tim', 'Kumpulkan Meeting', 'Semua Kerja!', 'Semua Ngopi']
+                placeholder: 'Diskusi strategi / komando tim ke Ruang Bos...',
+                greeting: 'Halo Bos Ardy! 👑 Co-Pilot Ruang Bos siap. Mau cek progres riil folder produksi, diskusi strategi konten minggu ini, atau komando tim pindah ruangan?',
+                chips: ['Laporan riil progres tim', 'Kumpulkan Meeting', 'Semua Kerja!', 'Semua Ngopi']
             },
             sentod: {
-                placeholder: 'Perintahkan Sentod (riset tren, brief, ngopi)...',
-                greeting: 'Siap Bos Ardy! Sentod di sini. Mau saya riset tren viral niche apa hari ini, atau cek brief terbaru di 01_briefs/?',
-                chips: ['Riset tren AI hari ini', 'Buat brief konten baru', 'Ajak ke Ruang Meeting', 'Istirahat ngopi dulu']
+                placeholder: 'Ngobrol / tanya ide konten & tren ke Sentod...',
+                greeting: 'Halo Bos Ardy! 🔎 Sentod siap di meja analis. Mau kita bedah tren viral hari ini, adu ide hook 3 detik yang bikin orang berhenti scroll, atau susun brief baru?',
+                chips: ['Tren viral apa hari ini?', 'Buatkan 3 ide hook tajam', 'Cek isi 01_briefs terbaru', 'Istirahat ngopi dulu']
             },
             jubaidah: {
-                placeholder: 'Perintahkan Jubaidah (edit 9:16, subtitle, render)...',
-                greeting: 'Halo Bos Ardy! Jubaidah siap di meja editing. Mau saya lanjut render video vertikal 9:16, revisi subtitle, atau potong hook awal?',
-                chips: ['Edit video 9:16 + subtitle', 'Revisi hook 3 detik awal', 'Cek status render FFmpeg', 'Istirahat ngopi dulu']
+                placeholder: 'Diskusi konsep visual / editing 9:16 ke Jubaidah...',
+                greeting: 'Siap Bos Ardy! 🎬 Jubaidah standby di timeline 9:16. Mau konsultasi gaya pacing & subtitle kinetik biar retensi tinggi, cek spek video, atau langsung gas render?',
+                chips: ['Saran pacing biar retensi tinggi?', 'Cek video di 02_edited_videos', 'Edit video 9:16 + subtitle', 'Istirahat ngopi dulu']
             },
             bodat: {
-                placeholder: 'Perintahkan Bodat (caption, jadwal, ACC upload)...',
-                greeting: 'Siap Bos Ardy! Bodat standby untuk penulis caption & penjadwalan upload. Mau dibuatkan 3 variasi caption SEO atau sudah ACC upload?',
-                chips: ['Buat 3 variasi caption', 'ACC Upload sekarang!', 'Cek paket 03_ready_to_post', 'Istirahat ngopi dulu']
+                placeholder: 'Minta racik caption / strategi upload ke Bodat...',
+                greeting: 'Halo Bos Ardy! 🚀 Bodat siap meracik kata. Mau dibuatkan caption yang mancing debat sehat di komentar, tanya jam prime time upload, atau ACC paket siap tayang?',
+                chips: ['Racik caption pancing komentar', 'Jam upload terbaik hari ini?', 'Cek paket 03_ready_to_post', 'ACC Upload sekarang!']
             }
         };
 
         const agentChatHistory = { ardy: [], sentod: [], jubaidah: [], bodat: [] };
         const agentTypingState = { ardy: false, sentod: false, jubaidah: false, bodat: false };
+        const pendingUserMsgIds = { ardy: null, sentod: null, jubaidah: null, bodat: null };
+        const lastSeenReplyId = { ardy: null, sentod: null, jubaidah: null, bodat: null };
+        const lastSeenBubbleId = { ardy: null, sentod: null, jubaidah: null, bodat: null };
+        let fastPollTimer = null;
+        let fastPollUntil = 0;
 
         function getTimeHHMM() {
             return new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function getConfiguredGasBaseUrl() {
+            const raw = (safeStorage.get('ardy_office_sync_url') || '').trim();
+            if (raw.includes('script.google.com/macros/s/')) {
+                return raw.split('?')[0];
+            }
+            return '';
+        }
+
+        function getConfiguredGasToken() {
+            return (safeStorage.get('ardy_office_gas_token') || '').trim();
+        }
+
+        function canUseLiveAiBrain() {
+            if (isGasEnvironment()) return true;
+            return Boolean(getConfiguredGasBaseUrl() && getConfiguredGasToken());
+        }
+
+        function updateAiBadgeUI() {
+            const badge = document.getElementById('inspect-ai-badge');
+            if (!badge) return;
+            if (canUseLiveAiBrain()) {
+                badge.textContent = '🧠 AI Antigravity Live';
+                badge.className = 'text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/25 text-emerald-200 border border-emerald-400/30 shrink-0';
+            } else {
+                badge.textContent = '⚡ Simulasi Lokal';
+                badge.className = 'text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/25 text-amber-200 border border-amber-400/30 shrink-0';
+            }
         }
 
         function ensureChatInitialized(key) {
             if (!agentChatHistory[key]) agentChatHistory[key] = [];
             if (agentChatHistory[key].length === 0 && AGENT_CHAT_CONFIG[key]) {
                 agentChatHistory[key].push({
+                    id: 'greeting_' + key,
                     sender: 'agent',
                     text: AGENT_CHAT_CONFIG[key].greeting,
-                    time: getTimeHHMM()
+                    time: getTimeHHMM(),
+                    isGreeting: true
                 });
             }
         }
@@ -1862,6 +1906,13 @@
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#39;');
+        }
+
+        function formatRichAgentText(str) {
+            let safe = escapeHtml(str);
+            safe = safe.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold text-slate-900">$1</strong>');
+            safe = safe.replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 rounded bg-slate-100 text-teal-800 font-mono text-[10px]">$1</code>');
+            return safe;
         }
 
         function formatAntigravityPrompt(key, userText) {
@@ -1880,6 +1931,22 @@
             copyTextSafe(formatAntigravityPrompt(key, msg.text), '📋 Perintah disalin! Tinggal tempel di chat Google Antigravity.');
         };
 
+        window.clearCurrentAgentChat = function() {
+            if (!inspectedAgentKey) return;
+            const key = inspectedAgentKey;
+            agentChatHistory[key] = [];
+            agentTypingState[key] = false;
+            pendingUserMsgIds[key] = null;
+            ensureChatInitialized(key);
+            renderAgentChat(key);
+            if (isGasEnvironment() && typeof google.script.run.clearAgentChat === 'function') {
+                try {
+                    google.script.run.clearAgentChat(key);
+                } catch (_) { /* ignore */ }
+            }
+            showToast(`🧹 Riwayat obrolan ${AGENT_INFO[key].name} dibersihkan.`);
+        };
+
         function renderAgentChat(key) {
             const listEl = document.getElementById('agent-chat-messages');
             const chipsEl = document.getElementById('agent-chat-chips');
@@ -1887,6 +1954,7 @@
             if (!listEl || !AGENT_CHAT_CONFIG[key]) return;
 
             ensureChatInitialized(key);
+            updateAiBadgeUI();
             if (inputEl) inputEl.placeholder = AGENT_CHAT_CONFIG[key].placeholder;
 
             if (chipsEl) {
@@ -1898,25 +1966,29 @@
             const htmlParts = agentChatHistory[key].map((m, idx) => {
                 if (m.sender === 'user') {
                     const cloudBadge = m.sentToGas
-                        ? `<span class="text-[9px] text-teal-100/90">☁️ Terkirim ke GAS</span>`
+                        ? `<span class="text-[9px] text-teal-100/90">🧠 Terkirim ke AI</span>`
                         : `<button type="button" onclick="copyChatPrompt('${key}', ${idx})" class="text-[9px] text-teal-100 hover:text-white underline decoration-teal-300/70">📋 Salin ke Antigravity</button>`;
                     return `
                         <div class="flex flex-col items-end">
                             <div class="max-w-[86%] rounded-2xl rounded-tr-sm bg-teal-600 text-white px-3 py-2 text-[11px] leading-relaxed shadow-sm">
-                                <div>${escapeHtml(m.text)}</div>
+                                <div class="whitespace-pre-line">${escapeHtml(m.text)}</div>
                                 <div class="mt-1 flex items-center justify-end gap-2 text-[9px] text-teal-100/85">
                                     ${cloudBadge}
-                                    <span>${m.time}</span>
+                                    <span>${m.time || ''}</span>
                                 </div>
                             </div>
                         </div>
                     `;
                 }
+                const aiTag = m.isGreeting
+                    ? ''
+                    : `<span class="text-[9px] font-bold text-teal-700">🧠 ${escapeHtml(AGENT_INFO[key].name)}</span>`;
                 return `
                     <div class="flex flex-col items-start">
-                        <div class="max-w-[88%] rounded-2xl rounded-tl-sm bg-white border border-slate-200 text-slate-800 px-3 py-2 text-[11px] leading-relaxed shadow-sm">
-                            <div class="whitespace-pre-line">${escapeHtml(m.text)}</div>
-                            <div class="mt-1 text-[9px] text-slate-400 text-right">${m.time}</div>
+                        <div class="max-w-[90%] rounded-2xl rounded-tl-sm bg-white border border-slate-200 text-slate-800 px-3 py-2 text-[11px] leading-relaxed shadow-sm">
+                            ${aiTag ? `<div class="mb-0.5">${aiTag}</div>` : ''}
+                            <div class="whitespace-pre-line">${formatRichAgentText(m.text)}</div>
+                            <div class="mt-1 text-[9px] text-slate-400 text-right">${m.time || ''}</div>
                         </div>
                     </div>
                 `;
@@ -1925,10 +1997,13 @@
             if (agentTypingState[key]) {
                 htmlParts.push(`
                     <div class="flex items-start">
-                        <div class="rounded-2xl rounded-tl-sm bg-white border border-slate-200 px-3 py-2 shadow-sm flex items-center gap-1">
-                            <span class="typing-dot"></span>
-                            <span class="typing-dot"></span>
-                            <span class="typing-dot"></span>
+                        <div class="rounded-2xl rounded-tl-sm bg-white border border-teal-200 px-3 py-2 shadow-sm flex items-center gap-2">
+                            <div class="flex items-center gap-1">
+                                <span class="typing-dot"></span>
+                                <span class="typing-dot"></span>
+                                <span class="typing-dot"></span>
+                            </div>
+                            <span class="text-[10px] font-semibold text-teal-700">${escapeHtml(AGENT_INFO[key].name)} sedang berpikir di Antigravity...</span>
                         </div>
                     </div>
                 `);
@@ -1938,132 +2013,110 @@
             listEl.scrollTop = listEl.scrollHeight;
         }
 
-        function generateAgentReplyAndAction(key, rawText) {
+        // Fallback lokal hanya dipakai bila file dibuka offline tanpa koneksi GAS / Token
+        function generateOfflineFallbackReply(key, rawText) {
             const t = rawText.toLowerCase();
-            const ag = agents[key];
-
             if (key === 'ardy') {
-                if (t.includes('meeting') || t.includes('rapat') || t.includes('kumpul')) {
-                    window.setOfficeMode('meeting');
-                    return { reply: 'Siap Bos! Seluruh tim (Sentod, Jubaidah, Bodat) sudah dipanggil ke Ruang Meeting untuk diskusi konten.', bubble: 'Ayo semua ke Ruang Meeting! 📊' };
-                }
-                if (t.includes('ngopi') || t.includes('istirahat') || t.includes('santai') || t.includes('break')) {
-                    window.setOfficeMode('coffee');
-                    return { reply: 'Perintah diterima! Seluruh tim beralih ke mode Ngopi & istirahat di Coffee Lounge.', bubble: 'Waktunya ngopi santai! ☕' };
-                }
-                if (t.includes('kerja') || t.includes('gas') || t.includes('mulai') || t.includes('produksi')) {
-                    window.setOfficeMode('work');
-                    return { reply: 'Siap Bos! Semua agen kembali ke meja kerja masing-masing untuk menjalankan pipeline konten.', bubble: 'Semua kembali kerja! 💼' };
-                }
-                if (t.includes('laporan') || t.includes('status') || t.includes('cek') || t.includes('progres')) {
-                    const summary = ['sentod', 'jubaidah', 'bodat'].map(k => {
-                        const a = agents[k];
-                        return `• ${AGENT_INFO[k].name}: ${a.liveStatus || 'Aktif'} (Ruang: ${a.currentRoom})`;
-                    }).join('\n');
-                    return { reply: `Laporan terkini tim AI:\n${summary}\n\nKetik "kumpulkan meeting" atau klik agen tertentu untuk memberi tugas spesifik.`, bubble: 'Memeriksa laporan tim... 📋' };
-                }
-                if (ag) { ag.liveTask = rawText; setAgentStatusText('ardy', 'Beri Arahan'); }
-                return { reply: `Arahan Bos Ardy dicatat: "${rawText}". Klik tombol salin di atas untuk mengirim langsung ke Google Antigravity Remote.`, bubble: 'Arahan tercatat! 👑' };
+                if (t.includes('meeting') || t.includes('rapat')) { window.setOfficeMode('meeting'); return { reply: '(Simulasi Lokal) Seluruh tim dipanggil ke Ruang Meeting.', bubble: 'Ayo ke Ruang Meeting! 📊' }; }
+                if (t.includes('ngopi') || t.includes('istirahat')) { window.setOfficeMode('coffee'); return { reply: '(Simulasi Lokal) Seluruh tim istirahat di Coffee Lounge.', bubble: 'Waktunya ngopi! ☕' }; }
+                if (t.includes('kerja')) { window.setOfficeMode('work'); return { reply: '(Simulasi Lokal) Semua agen kembali ke meja kerja.', bubble: 'Semua kerja! 💼' }; }
             }
-
-            if (t.includes('ngopi') || t.includes('istirahat') || t.includes('kopi') || t.includes('santai') || t.includes('break')) {
-                moveAgentToRoom(key, 'coffee', false);
-                setAgentStatusText(key, 'Ngopi Santai');
-                if (ag) ag.liveTask = 'Beristirahat di Coffee Bar & Lounge';
-                return { reply: 'Makasih Bos Ardy! Saya jalan ke Area Ngopi dulu untuk istirahat sejenak ☕. Panggil lagi kapan saja ya!', bubble: 'Otw ngopi dulu Bos! ☕' };
-            }
-            if (t.includes('meeting') || t.includes('rapat') || t.includes('diskusi')) {
-                moveAgentToRoom(key, 'meeting', false);
-                setAgentStatusText(key, 'Menuju Rapat');
-                if (ag) ag.liveTask = 'Menunggu di Ruang Meeting Konten';
-                return { reply: 'Siap Bos Ardy! Saya langsung meluncur ke Ruang Meeting dan menyiapkan bahan pembahasan 📊.', bubble: 'Otw Ruang Meeting! 📊' };
-            }
-            if (t.includes('ruang bos') || t.includes('hadap') || t.includes('ke sini') || t.includes('kesini')) {
-                moveAgentToRoom(key, 'boss', false);
-                setAgentStatusText(key, 'Lapor ke Bos');
-                if (ag) ag.liveTask = 'Menghadap Bos Ardy di Ruang Bos';
-                return { reply: 'Baik Bos Ardy! Saya segera menuju ke Ruang Bos untuk melaporkan progres langsung.', bubble: 'Siap menghadap Bos! 🫡' };
-            }
-
-            if (key === 'sentod') {
-                moveAgentToRoom('sentod', 'workspace', false);
-                if (t.includes('brief') || t.includes('naskah') || t.includes('skrip')) {
-                    setAgentStatusText('sentod', 'Tulis Brief');
-                    if (ag) ag.liveTask = `Menyusun brief: ${rawText}`;
-                    return { reply: 'Siap Bos! Saya langsung susun brief terstruktur (Hook 3 detik + skrip + arahan visual) ke 01_briefs/ untuk diteruskan ke Jubaidah.', bubble: 'Menyusun brief konten... 📝' };
-                }
-                setAgentStatusText('sentod', 'Riset Tren');
-                if (ag) ag.liveTask = `Riset tren: ${rawText}`;
-                return { reply: `Oke Bos Ardy! Sentod langsung riset tren & kompetitor untuk "${rawText}". Hasil analisis akan segera saya simpan di 01_briefs/.`, bubble: 'Mulai riset tren viral! 🔎' };
-            }
-
-            if (key === 'jubaidah') {
-                moveAgentToRoom('jubaidah', 'workspace', false);
-                if (t.includes('revisi') || t.includes('hook') || t.includes('potong') || t.includes('subtitle')) {
-                    setAgentStatusText('jubaidah', 'Revisi Video');
-                    if (ag) ag.liveTask = `Revisi video: ${rawText}`;
-                    return { reply: `Siap Bos Ardy! Jubaidah langsung kerjakan revisi "${rawText}" di timeline FFmpeg, cek ulang lewat ffprobe, lalu update file di 02_edited_videos/.`, bubble: 'Mengerjakan revisi edit! ✂️' };
-                }
-                if (t.includes('status') || t.includes('cek') || t.includes('progres')) {
-                    return { reply: `Status Jubaidah: ${ag ? (ag.liveTask || ag.liveStatus || 'Siap render 9:16') : 'Aktif'}. Format standar 9:16 (1080x1920, 30fps) + audio normalisasi siap dieksekusi di cloud.`, bubble: 'Timeline 9:16 aman Bos! 🎬' };
-                }
-                setAgentStatusText('jubaidah', 'Edit FFmpeg');
-                if (ag) ag.liveTask = `Editing video: ${rawText}`;
-                return { reply: `Roger Bos Ardy! Jubaidah langsung mulai proses editing & render untuk "${rawText}" di meja kerja. Selesai nanti langsung dioper ke Bodat!`, bubble: 'Gas render video 9:16! 🎬' };
-            }
-
-            if (key === 'bodat') {
-                moveAgentToRoom('bodat', 'workspace', false);
-                if (t.includes('acc') || t.includes('upload') || t.includes('publish') || t.includes('tayang')) {
-                    setAgentStatusText('bodat', 'Upload Konten');
-                    if (ag) ag.liveTask = 'Menjalankan penjadwalan/upload sesuai ACC Bos Ardy';
-                    const banner = document.getElementById('approval-banner');
-                    if (banner) banner.classList.add('hidden');
-                    return { reply: 'ACC diterima Bos Ardy! ✅ Bodat langsung proses publikasi/penjadwalan paket konten di 03_ready_to_post/ lalu arsipkan ke 04_published_archive/.', bubble: 'ACC! Otw upload konten 🚀' };
-                }
-                if (t.includes('caption') || t.includes('hashtag') || t.includes('tulis')) {
-                    setAgentStatusText('bodat', 'Tulis Caption');
-                    if (ag) ag.liveTask = `Menulis variasi caption: ${rawText}`;
-                    return { reply: 'Siap Bos Ardy! Bodat buatkan 3 variasi caption (Santai, Edukatif, Pancing Komentar) lengkap dengan CTA & 5-8 hashtag SEO.', bubble: 'Nulis 3 variasi caption ✍️' };
-                }
-                setAgentStatusText('bodat', 'Siapkan Paket');
-                if (ag) ag.liveTask = `Tugas Bodat: ${rawText}`;
-                return { reply: `Siap dilaksanakan Bos Ardy! Instruksi "${rawText}" langsung Bodat proses di folder 03_ready_to_post/ dan tetap menunggu ACC final sebelum tayang.`, bubble: 'Siap proses Bos Ardy! 📦' };
-            }
-
-            return { reply: `Siap Bos Ardy! Perintah "${rawText}" sudah saya terima dan langsung saya kerjakan.`, bubble: 'Siap laksanakan Bos! 👍' };
+            return {
+                reply: `(Mode Simulasi Lokal) Untuk mendapatkan jawaban cerdas AI Agent sesungguhnya dari ${AGENT_INFO[key].name}, buka Kantor 3D melalui link Google Apps Script (/exec) atau masukkan URL GAS + SECRET_TOKEN di menu Live Cloud Sync ☁️.`,
+                bubble: 'Hubungkan ke GAS untuk Otak AI! 🧠'
+            };
         }
 
-        function sendAgentChatMessage(key, rawText) {
+        function triggerFastPollingWindow(durationMs = 45000) {
+            fastPollUntil = Date.now() + durationMs;
+            if (fastPollTimer) return;
+            fastPollTimer = setInterval(() => {
+                if (Date.now() > fastPollUntil) {
+                    clearInterval(fastPollTimer);
+                    fastPollTimer = null;
+                    return;
+                }
+                if (isGasEnvironment()) {
+                    fetchGasStateOnce();
+                } else {
+                    const savedUrl = (safeStorage.get('ardy_office_sync_url') || '').trim();
+                    if (savedUrl) fetchUrlStateOnce(savedUrl);
+                }
+            }, 2500);
+        }
+
+        async function sendAgentChatMessage(key, rawText) {
             const text = String(rawText || '').trim();
             if (!text || !agents[key]) return;
 
             ensureChatInitialized(key);
-            const inGas = isGasEnvironment();
+            const liveBrain = canUseLiveAiBrain();
+            const msgId = `msg_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
 
             agentChatHistory[key].push({
+                id: msgId,
                 sender: 'user',
                 text,
                 time: getTimeHHMM(),
-                sentToGas: inGas
+                sentToGas: liveBrain,
+                localOptimistic: true,
+                sentAtMs: Date.now()
             });
 
-            if (inGas) {
-                try {
-                    google.script.run
-                        .withSuccessHandler(() => showToast(`☁️ Pesan ke ${AGENT_INFO[key].name} tersimpan di Apps Script!`))
-                        .withFailureHandler(() => showToast('⚠️ Gagal meneruskan chat ke Code.gs'))
-                        .sendBossCommand(formatAntigravityPrompt(key, text));
-                } catch (_) { /* ignore */ }
-            }
-
             agentTypingState[key] = true;
+            pendingUserMsgIds[key] = msgId;
             renderAgentChat(key);
 
+            if (liveBrain) {
+                updateSpeechBubbleText(agents[key], '💭 Sedang memikirkan jawaban...');
+                setAgentStatusText(key, 'Sedang Mikir💭');
+                triggerFastPollingWindow(60000);
+
+                if (isGasEnvironment()) {
+                    const onSent = () => showToast(`🧠 Pesan dikirim ke otak AI ${AGENT_INFO[key].name}!`);
+                    const onFail = () => {
+                        agentTypingState[key] = false;
+                        renderAgentChat(key);
+                        showToast('⚠️ Gagal mengirim chat ke Apps Script.');
+                    };
+                    try {
+                        if (typeof google.script.run.sendAgentChat === 'function') {
+                            google.script.run.withSuccessHandler(onSent).withFailureHandler(onFail).sendAgentChat(key, text, msgId);
+                        } else {
+                            // Kompatibel penuh dengan Code.gs v1 sebelum di-redeploy!
+                            google.script.run.withSuccessHandler(onSent).withFailureHandler(onFail).sendBossCommand(`[CHAT:${key}:${msgId}] ${text}`);
+                        }
+                    } catch (_) {
+                        onFail();
+                    }
+                } else {
+                    // Kirim langsung dari GitHub Pages ke GAS /exec memakai token di localStorage
+                    const gasBase = getConfiguredGasBaseUrl();
+                    const gasToken = getConfiguredGasToken();
+                    try {
+                        const res = await fetch(gasBase, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({ token: gasToken, action: 'user_chat', agent: key, text, id: msgId })
+                        });
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+                        showToast(`🧠 Pesan dikirim ke otak AI ${AGENT_INFO[key].name}!`);
+                    } catch (err) {
+                        agentTypingState[key] = false;
+                        renderAgentChat(key);
+                        showToast('⚠️ Gagal mengirim chat ke GAS URL.');
+                        console.warn(err);
+                    }
+                }
+                return;
+            }
+
+            // Hanya jika offline / tanpa koneksi GAS
             setTimeout(() => {
                 agentTypingState[key] = false;
-                const result = generateAgentReplyAndAction(key, text);
+                const result = generateOfflineFallbackReply(key, text);
                 agentChatHistory[key].push({
+                    id: 'sim_' + Date.now(),
                     sender: 'agent',
                     text: result.reply,
                     time: getTimeHHMM()
@@ -2072,7 +2125,7 @@
                 if (inspectedAgentKey === key) {
                     updateInspectCardContent(key);
                 }
-            }, 460);
+            }, 420);
         }
 
         window.handleAgentChatSubmit = function(e) {
@@ -2140,8 +2193,10 @@
             };
 
             updateInspectCardContent(key);
-            updateSpeechBubbleText(ag, 'Halo Bos Ardy! Ada perintah? 👋');
-            showToast(`💬 Chat dibuka dengan ${AGENT_INFO[key].name}`);
+            if (!agentTypingState[key]) {
+                updateSpeechBubbleText(ag, `Halo Bos Ardy! ${AGENT_INFO[key].name} siap diskusi 👋`);
+            }
+            showToast(`💬 Chat AI dibuka dengan ${AGENT_INFO[key].name}`);
 
             if (window.innerWidth >= 640) {
                 setTimeout(() => {
@@ -2164,6 +2219,7 @@
         let simTimer = null;
         let simStep = 0;
         let lastApprovalMessage = 'Paket konten hari ini siap ACC Bos Ardy.';
+        let isInitialStateSync = true;
 
         function isGasEnvironment() {
             return typeof google !== 'undefined' && google.script && google.script.run;
@@ -2191,6 +2247,74 @@
             }
         }
 
+        function syncServerChats(serverChats, pendingAgents) {
+            if (!serverChats || typeof serverChats !== 'object') return;
+            const pendingList = Array.isArray(pendingAgents) ? pendingAgents : null;
+
+            ['ardy', 'sentod', 'jubaidah', 'bodat'].forEach(key => {
+                const srvList = Array.isArray(serverChats[key]) ? serverChats[key] : [];
+                ensureChatInitialized(key);
+                const greetingMsg = agentChatHistory[key][0] && agentChatHistory[key][0].isGreeting
+                    ? agentChatHistory[key][0]
+                    : { id: 'greeting_' + key, sender: 'agent', text: AGENT_CHAT_CONFIG[key].greeting, time: '', isGreeting: true };
+
+                // Pertahankan pesan optimistik lokal terbaru bila belum tampak di server (<90 detik)
+                const nowMs = Date.now();
+                const localOptimistic = agentChatHistory[key].filter(m => {
+                    if (!m.localOptimistic) return false;
+                    if (nowMs - (m.sentAtMs || 0) > 90000) return false;
+                    return !srvList.some(sm => sm.sender === 'user' && (sm.id === m.id || sm.text === m.text));
+                });
+
+                const normalizedSrv = srvList.map(m => ({
+                    id: m.id || '',
+                    reply_to: m.reply_to || null,
+                    sender: m.sender === 'user' ? 'user' : 'agent',
+                    text: String(m.text || ''),
+                    bubble: m.bubble || '',
+                    time: m.time || '',
+                    sentToGas: true
+                }));
+
+                // Cek apakah ada balasan AI baru untuk agen ini
+                const agentReplies = normalizedSrv.filter(m => m.sender === 'agent');
+                const latestReply = agentReplies.length > 0 ? agentReplies[agentReplies.length - 1] : null;
+
+                if (latestReply && latestReply.id) {
+                    if (isInitialStateSync) {
+                        lastSeenReplyId[key] = latestReply.id;
+                    } else if (lastSeenReplyId[key] !== latestReply.id) {
+                        lastSeenReplyId[key] = latestReply.id;
+                        agentTypingState[key] = false;
+                        pendingUserMsgIds[key] = null;
+                        if (agents[key]) {
+                            updateSpeechBubbleText(agents[key], latestReply.bubble || latestReply.text.slice(0, 56));
+                        }
+                        if (inspectedAgentKey !== key) {
+                            showToast(`💬 ${AGENT_INFO[key].name} baru saja membalas chat Anda!`);
+                        }
+                    }
+                }
+
+                // Sinkronkan status mengetik dari pending_agents (Code.gs v2) bila tersedia
+                if (pendingList !== null) {
+                    if (pendingList.includes(key)) {
+                        agentTypingState[key] = true;
+                    } else if (localOptimistic.length === 0) {
+                        agentTypingState[key] = false;
+                    }
+                } else if (latestReply && pendingUserMsgIds[key] && latestReply.reply_to === pendingUserMsgIds[key]) {
+                    agentTypingState[key] = false;
+                    pendingUserMsgIds[key] = null;
+                }
+
+                agentChatHistory[key] = [greetingMsg, ...normalizedSrv, ...localOptimistic];
+                if (inspectedAgentKey === key) {
+                    renderAgentChat(key);
+                }
+            });
+        }
+
         function applyOfficeState(data) {
             if (!data || typeof data !== 'object') return;
             const validRooms = ['boss', 'workspace', 'meeting', 'coffee'];
@@ -2205,9 +2329,19 @@
                     if (st.status) setAgentStatusText(key, st.status);
                     if (st.task !== undefined) {
                         agents[key].liveTask = st.task;
-                        if (inspectedAgentKey === key) updateInspectCardContent(key);
                     }
+                    if (st.bubble && st.bubble_id && lastSeenBubbleId[key] !== st.bubble_id) {
+                        lastSeenBubbleId[key] = st.bubble_id;
+                        if (!isInitialStateSync) {
+                            updateSpeechBubbleText(agents[key], st.bubble);
+                        }
+                    }
+                    if (inspectedAgentKey === key) updateInspectCardContent(key);
                 });
+            }
+
+            if (data.chats) {
+                syncServerChats(data.chats, data.pending_agents);
             }
 
             if (data.mode) {
@@ -2225,6 +2359,8 @@
             } else {
                 if (banner) banner.classList.add('hidden');
             }
+
+            isInitialStateSync = false;
         }
 
         function fetchGasStateOnce() {
@@ -2233,7 +2369,7 @@
                 google.script.run
                     .withSuccessHandler(stateObj => {
                         applyOfficeState(stateObj);
-                        setCloudBadge('live', 'GAS Live');
+                        setCloudBadge('live', 'GAS AI Live');
                         const tEl = document.getElementById('gas-last-sync');
                         if (tEl) tEl.textContent = `Sinkron ${getTimeHHMM()}`;
                     })
@@ -2251,7 +2387,7 @@
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 const json = await res.json();
                 applyOfficeState(json);
-                setCloudBadge('live', 'Cloud Live');
+                setCloudBadge('live', canUseLiveAiBrain() ? 'GAS AI Live' : 'Cloud Live');
             } catch (err) {
                 setCloudBadge('error', 'Sync Gagal');
                 console.warn('Cloud sync error:', err);
@@ -2262,23 +2398,26 @@
             if (isGasEnvironment()) {
                 document.getElementById('gas-live-section').classList.remove('hidden');
                 document.getElementById('btn-gas-approve').classList.remove('hidden');
-                document.getElementById('btn-cloud-label').textContent = 'GAS Live';
-                setCloudBadge('live', 'GAS Live');
+                document.getElementById('btn-cloud-label').textContent = 'GAS AI Live';
+                setCloudBadge('live', 'GAS AI Live');
                 fetchGasStateOnce();
-                pollingTimer = setInterval(fetchGasStateOnce, 5000);
+                pollingTimer = setInterval(fetchGasStateOnce, 4000);
                 return;
             }
 
             const savedUrl = safeStorage.get('ardy_office_sync_url');
+            const savedToken = safeStorage.get('ardy_office_gas_token');
             const defaultUrl = (window.location.protocol === 'http:' || window.location.protocol === 'https:')
                 ? new URL('./office_state.json', window.location.href).href
                 : '';
             const targetUrl = savedUrl || defaultUrl;
             const inp = document.getElementById('cloud-url-input');
+            const tokInp = document.getElementById('cloud-token-input');
             if (inp && targetUrl) inp.value = targetUrl;
+            if (tokInp && savedToken) tokInp.value = savedToken;
             if (targetUrl) {
                 fetchUrlStateOnce(targetUrl);
-                pollingTimer = setInterval(() => fetchUrlStateOnce(targetUrl), 5000);
+                pollingTimer = setInterval(() => fetchUrlStateOnce(targetUrl), 4500);
             }
         }
 
@@ -2302,12 +2441,15 @@
             }
 
             const url = (document.getElementById('cloud-url-input').value || '').trim();
+            const tok = ((document.getElementById('cloud-token-input') || {}).value || '').trim();
             if (!url) {
-                showToast('⚠️ Masukkan URL office_state.json terlebih dahulu.');
+                showToast('⚠️ Masukkan URL GAS ?api=state atau office_state.json terlebih dahulu.');
                 return;
             }
             const ms = parseInt(document.getElementById('cloud-interval-select').value, 10) || 5000;
             safeStorage.set('ardy_office_sync_url', url);
+            if (tok) safeStorage.set('ardy_office_gas_token', tok);
+            updateAiBadgeUI();
 
             if (simTimer) window.togglePipelineSimulation();
             fetchUrlStateOnce(url);
@@ -2315,7 +2457,7 @@
 
             btn.textContent = 'Hentikan Sync';
             btn.className = 'ml-auto text-xs font-bold px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white transition';
-            showToast('☁️ Live Cloud Sync diaktifkan!');
+            showToast(canUseLiveAiBrain() ? '🧠 GAS AI Brain 2-Arah aktif!' : '☁️ Live Cloud Sync diaktifkan!');
             closeCloudModal();
         };
 

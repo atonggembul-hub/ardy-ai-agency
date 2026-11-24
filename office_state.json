@@ -1,28 +1,53 @@
 {
-  "mode": "work",
-  "updated_at": "2026-11-24T13:43:43+07:00",
+  "mode": "coffee",
+  "updated_at": "2026-11-24T14:04:15+07:00",
   "approval_needed": false,
   "approval_message": "Paket konten 20261123 (@RaymondChins 58s 9:16 + 3 caption + Drive link) siap! Menunggu ACC Bos Ardy.",
   "agents": {
     "ardy": {
-      "status": "Mengawasi",
+      "status": "Pantau Santai",
       "room": "boss",
-      "task": "Memantau pipeline produksi konten"
+      "task": "Otak AI 4 karakter aktif memantau obrolan",
+      "bubble": "Semua tim otw Coffee Lounge! ☕🧠",
+      "bubble_id": "rep_1795503855131"
     },
     "sentod": {
-      "status": "Riset Tren",
-      "room": "workspace",
-      "task": "Analisis tren viral & brief konten"
+      "status": "Ngopi Santai",
+      "room": "coffee",
+      "task": "Standby riset konten berikutnya"
     },
     "jubaidah": {
-      "status": "Edit 9:16",
-      "room": "workspace",
-      "task": "Mengolah video & subtitle FFmpeg"
+      "status": "Ngopi Latte",
+      "room": "coffee",
+      "task": "Standby jika ada revisi video"
     },
     "bodat": {
-      "status": "Tulis Caption",
-      "room": "workspace",
-      "task": "Menyusun caption & paket upload"
+      "status": "Santai Bistro",
+      "room": "coffee",
+      "task": "Publikasi selesai, istirahat ngopi"
     }
+  },
+  "chats": {
+    "ardy": [
+      {
+        "id": "legacy_2026-11-24T06:47:01.431Z",
+        "sender": "user",
+        "text": "Semua Ngopi",
+        "time": "14:04",
+        "created_at": "2026-11-24T14:04:15+07:00"
+      },
+      {
+        "id": "rep_1795503855131",
+        "reply_to": "legacy_2026-11-24T06:47:01.431Z",
+        "sender": "agent",
+        "text": "Siap Bos Ardy! ☕ Instruksi diterima — Sentod, Jubaidah, dan Bodat sudah saya pindahkan ke Coffee Lounge untuk istirahat ngopi. Otak AI Antigravity untuk ke-4 karakter sekarang sudah aktif penuh, silakan ajak ngobrol siapa saja!",
+        "bubble": "Semua tim otw Coffee Lounge! ☕🧠",
+        "time": "14:04",
+        "created_at": "2026-11-24T14:04:15+07:00"
+      }
+    ],
+    "sentod": [],
+    "jubaidah": [],
+    "bodat": []
   }
 }

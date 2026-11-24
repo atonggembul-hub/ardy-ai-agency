@@ -5,6 +5,9 @@ __pycache__/
 Thumbs.db
 *.tmp
 *.log
+logs/*.json
+.env
+.env.*
 
 # File media mentah/render berukuran sangat besar (simpan di Google Drive, catat link di metadata.json)
 *.mov
