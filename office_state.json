@@ -1,13 +1,13 @@
 {
-  "mode": "work",
-  "updated_at": "2026-11-24T14:54:17+07:00",
-  "approval_needed": false,
-  "approval_message": "Paket konten 20261123 (@RaymondChins 58s 9:16 + 3 caption + Drive link) siap! Menunggu ACC Bos Ardy.",
+  "mode": "coffee",
+  "updated_at": "2026-11-24T14:56:23+07:00",
+  "approval_needed": true,
+  "approval_message": "Paket 20261124 (Samuel Christ 9:16 + 3 caption SEO) siap di 03_ready_to_post/paket_20261124/. Menunggu ACC Bos Ardy!",
   "agents": {
     "ardy": {
-      "status": "Review Ide 👑",
-      "room": "meeting",
-      "task": "Meninjau 3 temuan tren YouTube dari Sentod",
+      "status": "Perlu ACC 🔔",
+      "room": "boss",
+      "task": "Meninjau paket_20261124 untuk ACC publikasi",
       "bubble": "Sentod sudah dapat 3 ide tren YouTube hari ini! 🔥📋",
       "bubble_id": "rep_1795505508680"
     },
@@ -26,10 +26,10 @@
       "bubble_id": "b_jub_meet_1"
     },
     "bodat": {
-      "status": "Rapat Copy ✍️",
-      "room": "meeting",
-      "task": "Menyelaraskan hook caption & CTA dengan Jubaidah di Ruang Meeting",
-      "bubble": "Meluncur ke Ruang Meeting Bos! 🚀📊",
+      "status": "Tunggu ACC 🔔",
+      "room": "coffee",
+      "task": "Paket 20261124 siap di 03_ready_to_post/, menunggu ACC Bos Ardy",
+      "bubble": "Paket 20261124 siap! Menunggu ACC Bos Ardy! 🚀🔔",
       "bubble_id": "b_bod_meet_1"
     }
   },
