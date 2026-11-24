@@ -1,15 +1,15 @@
 {
   "mode": "meeting",
-  "updated_at": "2026-11-24T14:23:17+07:00",
+  "updated_at": "2026-11-24T14:25:22+07:00",
   "approval_needed": false,
   "approval_message": "Paket konten 20261123 (@RaymondChins 58s 9:16 + 3 caption + Drive link) siap! Menunggu ACC Bos Ardy.",
   "agents": {
     "ardy": {
-      "status": "Komando Rapat",
-      "room": "boss",
-      "task": "Memanggil Jubaidah & Bodat ke Ruang Meeting",
-      "bubble": "Jubaidah & Bodat dipanggil ke Ruang Meeting! 📊",
-      "bubble_id": "rep_1795504997494"
+      "status": "Pimpin Rapat 👑",
+      "room": "meeting",
+      "task": "Memimpin rapat bersama Jubaidah & Bodat di Ruang Meeting",
+      "bubble": "Otw masuk Ruang Meeting pimpin rapat! 👑📊",
+      "bubble_id": "rep_1795505122523"
     },
     "sentod": {
       "status": "Ngopi Santai",
@@ -80,6 +80,22 @@
         "bubble": "Jubaidah & Bodat dipanggil ke Ruang Meeting! 📊",
         "time": "14:23",
         "created_at": "2026-11-24T14:23:17+07:00"
+      },
+      {
+        "id": "msg_1795505093948_650",
+        "sender": "user",
+        "text": "kamu pindah ke ruangan meeting",
+        "time": "14:24",
+        "created_at": "2026-11-24T07:24:55.713Z"
+      },
+      {
+        "id": "rep_1795505122523",
+        "reply_to": "msg_1795505093948_650",
+        "sender": "agent",
+        "text": "Siap! Saya langsung berdiri dari meja Ruang Bos dan meluncur masuk ke **Ruang Meeting** buat mimpin diskusi bareng **Jubaidah** & **Bodat** sekarang! 👑📊\n\nAgenda apa yang mau kita bahas di meja rapat ini, Bos — evaluasi retensi video kemarin atau rencana konten baru hari ini?",
+        "bubble": "Otw masuk Ruang Meeting pimpin rapat! 👑📊",
+        "time": "14:25",
+        "created_at": "2026-11-24T14:25:22+07:00"
       }
     ],
     "sentod": [],
