@@ -1,28 +1,28 @@
 {
-  "mode": "coffee",
-  "updated_at": "2026-11-24T02:22:06+07:00",
+  "mode": "work",
+  "updated_at": "2026-11-24T13:43:43+07:00",
   "approval_needed": false,
   "approval_message": "Paket konten 20261123 (@RaymondChins 58s 9:16 + 3 caption + Drive link) siap! Menunggu ACC Bos Ardy.",
   "agents": {
     "ardy": {
-      "status": "Pantau Santai",
+      "status": "Mengawasi",
       "room": "boss",
-      "task": "Semua target hari ini selesai"
+      "task": "Memantau pipeline produksi konten"
     },
     "sentod": {
-      "status": "Ngopi Santai",
-      "room": "coffee",
-      "task": "Standby riset konten berikutnya"
+      "status": "Riset Tren",
+      "room": "workspace",
+      "task": "Analisis tren viral & brief konten"
     },
     "jubaidah": {
-      "status": "Ngopi Latte",
-      "room": "coffee",
-      "task": "Standby jika ada revisi video"
+      "status": "Edit 9:16",
+      "room": "workspace",
+      "task": "Mengolah video & subtitle FFmpeg"
     },
     "bodat": {
-      "status": "Santai Bistro",
-      "room": "coffee",
-      "task": "Publikasi selesai, istirahat ngopi"
+      "status": "Tulis Caption",
+      "room": "workspace",
+      "task": "Menyusun caption & paket upload"
     }
   }
 }
