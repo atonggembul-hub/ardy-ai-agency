@@ -40,7 +40,12 @@ python3 scripts/update_office_state.py \
 
 Pastikan `ffmpeg` dan `ffprobe` tersedia di lingkungan.
 
-### Opsi Standar (FFmpeg / Python — Cepat & Andal di Cloud)
+### Pipeline Utama Wajib: Gunakan Skill `/editvidio`
+Setiap kali Jubaidah mengedit video, **WAJIB** menggunakan skill **`/editvidio`** (`~/.gemini/skills/editvidio/SKILL.md`) sebagai pipeline utama:
+- Gunakan `yt-dlp` (dengan `--cookies /home/antigravity/.yt_cookies.txt` bila tersedia untuk YouTube), **OpenCV face tracking**, **Remotion kinetic typography** ala `@refinedambition_` (*black-screen cutaway* + mix Montserrat/Playfair Display), musik latar (*dynamic ducking*), dan SFX (*Boom*, *Whoosh*, *Pop*).
+- Simpan hasil akhirnya ke `02_edited_videos/video_YYYYMMDD.mp4` (`1080×1920`, `30fps`, `-16 LUFS`).
+
+### Fallback Cepat (FFmpeg — Hanya Jika Remotion/OpenCV Terkendala)
 1. **Konversi ke 9:16 (`1080×1920`, `30fps`, H.264 `yuv420p`) + Normalisasi Audio (`-16 LUFS`):**
    ```bash
    ffmpeg -y -i "<INPUT_VIDEO>" \
@@ -61,9 +66,6 @@ Pastikan `ffmpeg` dan `ffprobe` tersedia di lingkungan.
      02_edited_videos/video_YYYYMMDD.mp4
    ```
    *(Hapus file sementara `temp_9x16.mp4` setelah file final terbentuk.)*
-
-### Opsi Gaya Premium (Opsional)
-Jika Bos Ardy meminta gaya *kinetic typography* ala `@refinedambition_` dengan *OpenCV face tracking* + *black-screen cutaway* di Remotion, gunakan juga skill **`editvidio`** lalu simpan hasil akhirnya ke `02_edited_videos/video_YYYYMMDD.mp4`.
 
 ---
 
