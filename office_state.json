@@ -1,6 +1,6 @@
 {
-  "mode": "coffee",
-  "updated_at": "2026-11-24T15:34:03+07:00",
+  "mode": "work",
+  "updated_at": "2026-11-24T22:07:43+07:00",
   "approval_needed": false,
   "approval_message": "Paket 20261124 (Samuel Christ 9:16 + 3 caption SEO) siap di 03_ready_to_post/paket_20261124/. Menunggu ACC Bos Ardy!",
   "agents": {
@@ -10,9 +10,9 @@
       "task": "Semua target hari ini selesai"
     },
     "sentod": {
-      "status": "Ngopi Santai",
-      "room": "coffee",
-      "task": "Standby riset konten berikutnya"
+      "status": "Riset Tren",
+      "room": "workspace",
+      "task": "Mencari 3 tren viral terbaru hari ini sesuai niche"
     },
     "jubaidah": {
       "status": "Style Siap ✅",
