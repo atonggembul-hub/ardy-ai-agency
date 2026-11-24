@@ -1,6 +1,6 @@
 {
   "mode": "work",
-  "updated_at": "2026-11-24T14:48:45+07:00",
+  "updated_at": "2026-11-24T14:54:17+07:00",
   "approval_needed": false,
   "approval_message": "Paket konten 20261123 (@RaymondChins 58s 9:16 + 3 caption + Drive link) siap! Menunggu ACC Bos Ardy.",
   "agents": {
@@ -19,10 +19,10 @@
       "bubble_id": "b_sen_done_20261124"
     },
     "jubaidah": {
-      "status": "Rapat Visual 📊",
-      "room": "meeting",
-      "task": "Diskusi sinkronisasi visual & pacing dengan Bodat di Ruang Meeting",
-      "bubble": "Siap Bos! Otw Ruang Meeting bareng Bodat! 🎬📊",
+      "status": "QA Lulus ✅",
+      "room": "coffee",
+      "task": "video_20261124.mp4 lulus QA ffprobe (draft 9:16), siap ke Bodat",
+      "bubble": "Render 9:16 & QA ffprobe lulus Bos! Siap ke Bodat! 🎬✅",
       "bubble_id": "b_jub_meet_1"
     },
     "bodat": {
