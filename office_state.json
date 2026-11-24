@@ -1,6 +1,6 @@
 {
   "mode": "work",
-  "updated_at": "2026-11-24T14:31:50+07:00",
+  "updated_at": "2026-11-24T14:48:45+07:00",
   "approval_needed": false,
   "approval_message": "Paket konten 20261123 (@RaymondChins 58s 9:16 + 3 caption + Drive link) siap! Menunggu ACC Bos Ardy.",
   "agents": {
@@ -13,9 +13,9 @@
     },
     "sentod": {
       "status": "Selesai Riset✅",
-      "room": "workspace",
-      "task": "3 ide tren YouTube disimpan di 01_briefs/brief_20261124.md",
-      "bubble": "3 ide tren YouTube siap di brief_20261124.md Bos! 🔥🔎",
+      "room": "coffee",
+      "task": "Riset 3 channel YT selesai di 01_briefs/brief_20261124_youtube_3ch.md",
+      "bubble": "Riset 3 channel YT selesai! Siap dioper ke Jubaidah! 🔎✅",
       "bubble_id": "b_sen_done_20261124"
     },
     "jubaidah": {
