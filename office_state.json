@@ -1,20 +1,22 @@
 {
   "mode": "meeting",
-  "updated_at": "2026-11-24T14:25:22+07:00",
+  "updated_at": "2026-11-24T14:28:45+07:00",
   "approval_needed": false,
   "approval_message": "Paket konten 20261123 (@RaymondChins 58s 9:16 + 3 caption + Drive link) siap! Menunggu ACC Bos Ardy.",
   "agents": {
     "ardy": {
-      "status": "Pimpin Rapat 👑",
+      "status": "Rapat Lengkap 👑",
       "room": "meeting",
-      "task": "Memimpin rapat bersama Jubaidah & Bodat di Ruang Meeting",
-      "bubble": "Otw masuk Ruang Meeting pimpin rapat! 👑📊",
-      "bubble_id": "rep_1795505122523"
+      "task": "Memimpin rapat lengkap bersama Sentod, Jubaidah & Bodat",
+      "bubble": "Sentod, ayo merapat ke Ruang Meeting! 📢📊",
+      "bubble_id": "rep_1795505323913"
     },
     "sentod": {
-      "status": "Ngopi Santai",
-      "room": "coffee",
-      "task": "Tetap di Coffee Lounge sambil pantau ide tren"
+      "status": "Ikut Rapat 🔎",
+      "room": "meeting",
+      "task": "Memaparkan insight tren & ide hook di Ruang Meeting",
+      "bubble": "Siap Bos! Kopinya ditaruh dulu, otw rapat! 🔎📊",
+      "bubble_id": "b_sen_meet_1"
     },
     "jubaidah": {
       "status": "Rapat Visual 📊",
@@ -89,13 +91,29 @@
         "created_at": "2026-11-24T07:24:55.713Z"
       },
       {
-        "id": "rep_1795505122523",
+        "id": "rep_1795505123454_202",
         "reply_to": "msg_1795505093948_650",
         "sender": "agent",
         "text": "Siap! Saya langsung berdiri dari meja Ruang Bos dan meluncur masuk ke **Ruang Meeting** buat mimpin diskusi bareng **Jubaidah** & **Bodat** sekarang! 👑📊\n\nAgenda apa yang mau kita bahas di meja rapat ini, Bos — evaluasi retensi video kemarin atau rencana konten baru hari ini?",
         "bubble": "Otw masuk Ruang Meeting pimpin rapat! 👑📊",
         "time": "14:25",
-        "created_at": "2026-11-24T14:25:22+07:00"
+        "created_at": "2026-11-24T07:25:23.455Z"
+      },
+      {
+        "id": "msg_1795505290296_385",
+        "sender": "user",
+        "text": "panggil sentod meruang miting",
+        "time": "14:28",
+        "created_at": "2026-11-24T07:28:12.025Z"
+      },
+      {
+        "id": "rep_1795505323913",
+        "reply_to": "msg_1795505290296_385",
+        "sender": "agent",
+        "text": "Beres Bos! 👑 **Sentod** sudah saya panggil dari Coffee Lounge dan sekarang sedang berjalan gabung ke **Ruang Meeting**.\n\nFormasi lengkap 4 orang sekarang sudah kumpul di meja rapat (**Bos Ardy, Sentod, Jubaidah, Bodat**)! Mau langsung kita mulai *brainstorming* topik konten hari ini?",
+        "bubble": "Sentod, ayo merapat ke Ruang Meeting! 📢📊",
+        "time": "14:28",
+        "created_at": "2026-11-24T14:28:43+07:00"
       }
     ],
     "sentod": [],
