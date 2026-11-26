@@ -1,8 +1,8 @@
 {
-  "mode": "work",
-  "updated_at": "2026-11-26T15:34:31+07:00",
-  "approval_needed": false,
-  "approval_message": "Preview edit 1 menit Cania Citta (Suara Berkelas #107) siap dicek & di-ACC Bos Ardy sebelum render final MP4.",
+  "mode": "coffee",
+  "updated_at": "2026-11-26T15:48:12+07:00",
+  "approval_needed": true,
+  "approval_message": "Klip 1080p Cania Citta berhasil dipotong & di-face-track! 5 Preview real footage siap ACC Bos Ardy sebelum render final MP4.",
   "agents": {
     "ardy": {
       "status": "Perlu ACC 🔔",
@@ -15,9 +15,9 @@
       "task": "Mencari 3 tren viral terbaru hari ini sesuai niche"
     },
     "jubaidah": {
-      "status": "Potong Klip HD",
-      "room": "workspace",
-      "task": "Unduh & potong 3 segmen best part 1080p Cania Citta + OpenCV face tracking",
+      "status": "Tunggu ACC",
+      "room": "coffee",
+      "task": "Klip 1080p terunduh & face-tracked! 5 Preview real footage siap ACC sebelum render MP4",
       "bubble": "DNA editing 4 video Drive sudah dikantongi Bos! 🎬✅"
     },
     "bodat": {
