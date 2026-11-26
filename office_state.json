@@ -1,13 +1,13 @@
 {
-  "mode": "work",
-  "updated_at": "2026-11-26T14:59:05+07:00",
-  "approval_needed": false,
-  "approval_message": "Paket 20261124 (Samuel Christ 9:16 + 3 caption SEO) siap di 03_ready_to_post/paket_20261124/. Menunggu ACC Bos Ardy!",
+  "mode": "coffee",
+  "updated_at": "2026-11-26T15:13:21+07:00",
+  "approval_needed": true,
+  "approval_message": "Preview edit 1 menit Cania Citta (Suara Berkelas #107) siap dicek & di-ACC Bos Ardy sebelum render final MP4.",
   "agents": {
     "ardy": {
-      "status": "Pantau Santai",
+      "status": "Perlu ACC 🔔",
       "room": "boss",
-      "task": "Semua target hari ini selesai"
+      "task": "Meninjau paket siap tayang untuk ACC publikasi"
     },
     "sentod": {
       "status": "Riset Tren",
@@ -15,9 +15,9 @@
       "task": "Mencari 3 tren viral terbaru hari ini sesuai niche"
     },
     "jubaidah": {
-      "status": "Analisis Klip",
-      "room": "workspace",
-      "task": "Riset best part video YouTube BZ-tIGfrwgg & siapkan preview edit 1 menit 9:16",
+      "status": "Tunggu ACC",
+      "room": "coffee",
+      "task": "5 Preview edit 1 menit Cania Citta (9:16) siap review Bos Ardy sebelum render final",
       "bubble": "DNA editing 4 video Drive sudah dikantongi Bos! 🎬✅"
     },
     "bodat": {
