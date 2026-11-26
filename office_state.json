@@ -1,7 +1,7 @@
 {
-  "mode": "coffee",
-  "updated_at": "2026-11-26T15:48:12+07:00",
-  "approval_needed": true,
+  "mode": "work",
+  "updated_at": "2026-11-26T15:53:57+07:00",
+  "approval_needed": false,
   "approval_message": "Klip 1080p Cania Citta berhasil dipotong & di-face-track! 5 Preview real footage siap ACC Bos Ardy sebelum render final MP4.",
   "agents": {
     "ardy": {
@@ -15,9 +15,9 @@
       "task": "Mencari 3 tren viral terbaru hari ini sesuai niche"
     },
     "jubaidah": {
-      "status": "Tunggu ACC",
-      "room": "coffee",
-      "task": "Klip 1080p terunduh & face-tracked! 5 Preview real footage siap ACC sebelum render MP4",
+      "status": "Render Final",
+      "room": "workspace",
+      "task": "Render MP4 final 1080x1920 30fps Cania Citta (61,5s) + QA ffprobe & audio mix",
       "bubble": "DNA editing 4 video Drive sudah dikantongi Bos! 🎬✅"
     },
     "bodat": {
