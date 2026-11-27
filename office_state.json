@@ -1,8 +1,8 @@
 {
-  "mode": "work",
-  "updated_at": "2026-11-27T14:21:17+07:00",
-  "approval_needed": false,
-  "approval_message": "Klip 1080p Cania Citta berhasil dipotong & di-face-track! 5 Preview real footage siap ACC Bos Ardy sebelum render final MP4.",
+  "mode": "coffee",
+  "updated_at": "2026-11-27T14:26:29+07:00",
+  "approval_needed": true,
+  "approval_message": "5 Preview edit 1 menit Zhafira Aqyla (Harvard Mindset, 9:16) siap dicek & di-ACC sebelum render final MP4.",
   "agents": {
     "ardy": {
       "status": "Perlu ACC 🔔",
@@ -15,9 +15,9 @@
       "task": "Mencari 3 tren viral terbaru hari ini sesuai niche"
     },
     "jubaidah": {
-      "status": "Analisis Klip",
-      "room": "workspace",
-      "task": "Riset best part video Dt8f-oDJjLo & siapkan preview edit 1 menit 9:16",
+      "status": "Tunggu ACC",
+      "room": "coffee",
+      "task": "5 Preview edit 1 menit Zhafira Aqyla (Suara Berkelas #232) siap review Bos Ardy sebelum render final",
       "bubble": "DNA editing 4 video Drive sudah dikantongi Bos! 🎬✅"
     },
     "bodat": {
