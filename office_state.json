@@ -1,7 +1,7 @@
 {
-  "mode": "coffee",
-  "updated_at": "2026-11-27T14:26:29+07:00",
-  "approval_needed": true,
+  "mode": "work",
+  "updated_at": "2026-11-27T15:13:44+07:00",
+  "approval_needed": false,
   "approval_message": "5 Preview edit 1 menit Zhafira Aqyla (Harvard Mindset, 9:16) siap dicek & di-ACC sebelum render final MP4.",
   "agents": {
     "ardy": {
@@ -15,9 +15,9 @@
       "task": "Mencari 3 tren viral terbaru hari ini sesuai niche"
     },
     "jubaidah": {
-      "status": "Tunggu ACC",
-      "room": "coffee",
-      "task": "5 Preview edit 1 menit Zhafira Aqyla (Suara Berkelas #232) siap review Bos Ardy sebelum render final",
+      "status": "Potong Klip HD",
+      "room": "workspace",
+      "task": "Unduh 1080p Zhafira Aqyla (#232) & jalankan OpenCV face tracking + audio norm",
       "bubble": "DNA editing 4 video Drive sudah dikantongi Bos! 🎬✅"
     },
     "bodat": {
